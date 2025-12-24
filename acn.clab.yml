@@ -1,0 +1,71 @@
+name: acn-prj
+
+# Avoid having clab prefix on all nodes names (clab-<lab>-<node>)
+prefix: __lab-name
+
+mgmt:
+  network: custom_mgmt               # management network name
+  ipv4-subnet: 10.255.255.0/24       # ipv4 range
+  # ipv6-subnet: 3fff:10:255:255::/80  # ipv6 range
+
+
+topology:
+
+  # List of all nodes
+  nodes:
+
+    n1:
+      kind: linux
+      image: alpine:3.19.1
+      binds:
+        - ./config/linux-host-cfg.sh:/linux-cfg.sh
+      exec:
+        - sh /linux-cfg.sh
+      env:
+        MY_IP: 203.0.113.10/24
+        MY_GW: 203.0.113.1
+
+    n2:
+      kind: linux
+      image: alpine:3.19.1
+      binds:
+        - ./config/linux-host-cfg.sh:/linux-cfg.sh
+      exec:
+        - sh /linux-cfg.sh
+      env:
+        MY_IP: 203.0.114.10/24
+        MY_GW: 203.0.114.1
+
+    CE1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+        - ./config/startup/CE1_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+    CE2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+        - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+  
+    # Bridge
+    br-clab:
+      kind: bridge
+
+  # List of all links
+  links:
+    - endpoints: ["n1:eth1", "CE1:eth2"]
+    - endpoints: ["n2:eth1", "CE2:eth2"]
