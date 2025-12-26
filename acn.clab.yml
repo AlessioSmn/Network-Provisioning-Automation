@@ -36,6 +36,19 @@ topology:
         MY_IP: 203.0.114.10/24
         MY_GW: 203.0.114.1
 
+    n3:
+      kind: linux
+      image: alpine:3.19.1
+      binds:
+        - ./config/linux-host-cfg.sh:/linux-cfg.sh
+      exec:
+        - sh /linux-cfg.sh
+      env:
+        MY_IP: 203.0.114.10/24
+        MY_GW: 203.0.114.1
+
+    # Customers
+
     CE1:
       kind: linux
       image: quay.io/frrouting/frr:10.4.1
@@ -60,12 +73,108 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
 
+    # Providers 
+
+    UP1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+      #  - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+    UP2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+      #  - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+    # Core 
+
+    PE1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+      #  - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+    PE2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+      #  - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+    GW1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+      #  - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+
+    GW2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      exec:
+        - echo "FRR Node startup"
+        - bash /frr-cfg.sh
+      binds:
+      #  - ./config/startup/CE2_frr.conf:/etc/frr/frr.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
   
-    # Bridge
-    br-clab:
+    # Bridges
+
+    br-clab-core:
+      kind: bridge
+    br-clab-int:
       kind: bridge
 
   # List of all links
   links:
-    - endpoints: ["n1:eth1", "CE1:eth2"]
-    - endpoints: ["n2:eth1", "CE2:eth2"]
+    - endpoints: ["n1:eth1", "CE1:eth1"]
+    - endpoints: ["n2:eth1", "CE2:eth1"]
+
+    - endpoints: ["PE1:eth2", "CE1:eth2"]
+    - endpoints: ["PE1:eth3", "CE2:eth3"]
+    - endpoints: ["PE2:eth2", "CE2:eth2"]
+    - endpoints: ["PE2:eth3", "CE1:eth3"]
+
+    - endpoints: ["br-clab-core:eth1", "PE1:eth1"]
+    - endpoints: ["br-clab-core:eth2", "PE2:eth1"]
+    - endpoints: ["br-clab-core:eth3", "GW1:eth1"]
+    - endpoints: ["br-clab-core:eth4", "GW2:eth1"]
+
+    - endpoints: ["GW1:eth2", "UP1:eth2"]
+    - endpoints: ["GW2:eth2", "UP2:eth2"]
+
+    # Note: using the same interface names as br-clab-core will get error
+    - endpoints: ["UP1:eth1", "br-clab-int:eth5"]
+    - endpoints: ["UP2:eth1", "br-clab-int:eth6"]
+    - endpoints: ["n3:eth1", "br-clab-int:eth7"]
