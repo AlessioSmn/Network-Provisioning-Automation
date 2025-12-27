@@ -1,0 +1,63 @@
+! Startup-config
+!
+hostname {{hostname}}
+!
+{% if password and password != False -%}
+username {{username}} secret {{password}}
+{% else -%}
+username {{username}} nopassword
+{% endif -%}
+!
+management api ssh
+    no shutdown
+!
+{# ============= Interfaces ========================================== -#}
+{% if interfaces -%}
+{% for int in interfaces -%}
+interface {{int.name}}
+    {% if int.switchport == False -%}
+    no switchport
+    {% endif -%}
+    {% if int.ipv4 -%}
+    ip address {{int.ipv4}}
+    {% endif -%}
+    {% if int.ipv6 -%}
+    ipv6 address {{int.ipv6}}
+    {% endif -%}
+    no shutdown
+!
+{% endfor -%}
+{% endif -%}
+!
+{# ============= OSPF ========================================== -#}
+{% if ospf -%}
+router ospf {{ospf.pid}}
+    router-id {{ospf.router_id}}
+    {% for pi in ospf.passive_interfaces -%}
+        passive-interface {{pi}}
+    {% endfor -%}
+    {% for net in ospf.networks -%}
+    network {{net.network}} area {{net.area}}
+    {% endfor %}
+!
+{% endif -%}
+{% if ipv4_routes -%}
+{% for route in ipv4_routes -%}
+ip route {{route.destination}} {{route.next_hop}}
+{% endfor -%}
+!
+{% endif -%}
+{% if ipv6_routes -%}
+{% for route in ipv6_routes -%}
+ipv6 route {{route.destination}} {{route.next_hop}}
+{% endfor -%}
+!
+{% endif -%}
+{% if routing_enabled and routing_enabled == True -%}
+ip routing
+!
+{% else -%}
+no ip routing
+!
+{% endif -%}
+end

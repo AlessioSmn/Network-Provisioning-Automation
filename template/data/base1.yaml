@@ -1,0 +1,40 @@
+config_filename: CE1.conf
+
+name: CE1
+hostname: CE1
+username: admin
+password: False
+
+routing_enabled: True
+
+interfaces:
+- name: Ethernet1
+  switchport: False
+  ipv4: 192.168.11.1/24
+- name: Ethernet2
+  switchport: False
+  ipv4: 192.168.1.1/24
+
+dhcp:
+- subnet: 192.168.11.0/24
+  gw: 192.168.11.1
+  range_start: 192.168.11.100
+  range_end: 192.168.11.199
+
+ospf:
+  pid: 1
+  router_id: 1.1.1.1
+  passive_interfaces: [Management0]
+  networks:
+  - network: 192.168.11.0/24
+    area: 0
+  - network: 192.168.1.0/24
+    area: 0
+
+ipv4_routes:
+- destination: 0.0.0.0/0
+  next_hop: 172.20.20.1
+
+ipv6_routes:
+- destination: ::/0
+  next_hop: 3fff:172:20:20::1

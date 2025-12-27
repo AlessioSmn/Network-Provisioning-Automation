@@ -1,5 +1,7 @@
 #!/bin/bash
 
+/usr/lib/frr/frrinit.sh start
+
 # Function to get IP addresses and default gateways
 get_mgmt_info() {
   mgmt_ipv4_addr=$(ip -4 addr show eth0 | grep inet | awk '{print $2}')
@@ -53,5 +55,11 @@ if [ -n "${CLAB_MGMT_VRF}" ]; then
 fi
 echo "vrf configured"
 
+vtysh -f /etc/frr/frr.conf
+echo "startup config used"
+
 configure_frr
+echo "frr configured"
+
+vtysh -c "write memory"
 echo "all done"

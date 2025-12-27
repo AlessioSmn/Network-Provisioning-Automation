@@ -55,3 +55,29 @@ To manually destory containers:
 ```bash
 sudo docker rm -f <container-id>
 ```
+
+## Containers usage
+### FRR nodes
+- Access node
+    ```bash
+    docker exec -it <node-name> vtysh
+    ```
+- Exit shell:
+    ```bash
+    exit
+    ```
+- Show interfaces:
+    - Full:  `Node# show [i | int | interfaces]`
+    - Brief:  `Node# show [int | interfaces] [b | brief]`
+    - Specific:  `Node# show [int | interfaces] <interface name>`
+
+### Alpine nodes
+- Access node
+    ```bash
+    docker exec -it <node-name> sh
+    ```
+- Exit shell:
+ `ctrl`+`p`+`q`
+- Show interfaces:
+    - Full:  `/ # ip [addr | address]`
+    - Specific:  `/ # ip [addr | address] show dev <interface name>`
