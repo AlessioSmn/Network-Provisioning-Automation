@@ -177,6 +177,6 @@ topology:
     - endpoints: ["GW2:eth2", "UP2:eth2"]
 
     # Note: using the same interface names as br-clab-core will get error
-    - endpoints: ["UP1:eth1", "br-clab-int:eth5"]
-    - endpoints: ["UP2:eth1", "br-clab-int:eth6"]
-    - endpoints: ["n3:eth1", "br-clab-int:eth7"]
+    - endpoints: ["UP1:eth1", "br-clab-int:eth8"]
+    - endpoints: ["UP2:eth1", "br-clab-int:eth9"]
+    - endpoints: ["n3:eth1", "br-clab-int:eth10"]

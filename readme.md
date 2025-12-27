@@ -4,6 +4,8 @@ Group project for Advanced Computer Networking course, MSc in Computer Engineeri
 ## Description
 TODO
 ![Base structure](./img/project-base.jpg)
+Our structure:
+![Network structure](./img/project.jpg)
 
 ## Repository structure
 ```
@@ -12,26 +14,30 @@ TODO
 │   ├───frr
 │   └───startup
 ├───doc
-└───img
+├───img
+└───template
+    └───data
 ```
-
 
 ## Project deployment
 ### Deploy
- - Create bridges  
 
-Note that `br-clab-core` and `br-clab-int` are the name of the bridges used in `acn.clab.yml`
-```bash
-sudo ip link add br-clab-core type bridge
-sudo ip link set br-clab-core up
+1. Create bridges  
+  Note that `br-clab-core` and `br-clab-int` are the name of the bridges used in `acn.clab.yml`
+  - Via the provided script `br.sh`
+  - Manually:
+    ```bash
+    sudo ip link add br-clab-core type bridge
+    sudo ip link set br-clab-core up
 
-sudo ip link add br-clab-int type bridge
-sudo ip link set br-clab-int up
-```
- - Deploy the network with containerlab
-```bash
-sudo containerlab deploy [-t acn.clab.yml]
-```
+    sudo ip link add br-clab-int type bridge
+    sudo ip link set br-clab-int up
+    ```
+
+2. Deploy the network with containerlab
+  ```bash
+  sudo containerlab deploy [-t acn.clab.yml]
+  ```
 
 #### Redeploy
 ```bash
@@ -42,6 +48,7 @@ sudo containerlab redeploy [-t acn.clab.yml]
 ```bash
 sudo containerlab graph [--topo -t acn.clab.yml]
 ```
+Then open one of the proposed addresses with a browser
 
 ### Destroy
 ```bash
