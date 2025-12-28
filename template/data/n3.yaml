@@ -1,0 +1,22 @@
+config_filename: n3.conf
+
+name: n3
+hostname: n3
+username: admin
+password: False
+
+type: alpine
+
+routing_enabled: True
+
+interfaces:
+- name: eth1
+  switchport: False
+  ipv4: 203.0.113.10/24
+
+# ECMP
+ipv4_routes:
+- destination: 0.0.0.0/0
+  next_hop: 203.0.113.1
+- destination: 0.0.0.0/0
+  next_hop: 203.0.113.2

@@ -1,6 +1,22 @@
 # Network Provisioning and Automation
 Group project for Advanced Computer Networking course, MSc in Computer Engineering, Università di Pisa, A.Y. 2025/2026
 
+## TODO
+ - Fare uno script che banalmente lancia `python ./generator.py ./data/ce1.yaml` con tutti gli yaml presenti, per evitare di farlo a mano
+    - Volendo si pò fare un banale script che fa:
+    1. Lancia ./br.sh
+    2. Crea tutti gli startup-config
+    3. Fa sudo containerlab redeploy
+ - Fare scrivere le risultanti startup config direttamente in /config/startup, così da non dover copiare e incollare ogni volta
+    - Formalizzare la struttura delle cartelle che ho messo per ora totalmente a caso
+ - Decidere cosa fare della rete di management:
+    - Ha senso tenerla per entrare con ssh ma rompe il cazzo
+    - Non so se mettendola in una diversa vrf poi si accede comunque a tutto
+    - Quantomeno togliere la default route che va sulla management
+ - BGP:
+    - Mettere nel template
+    - Mettere le informazioni BGP in tutti gli .yaml
+
 ## Description
 TODO
 ![Base structure](./img/project-base.jpg)

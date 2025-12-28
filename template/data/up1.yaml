@@ -1,0 +1,16 @@
+config_filename: UP1.conf
+
+name: UP1
+hostname: UP1
+username: admin
+password: False
+
+routing_enabled: True
+
+interfaces:
+- name: eth1
+  switchport: False
+  ipv4: 203.0.113.1/24
+- name: eth2
+  switchport: False
+  ipv4: 172.16.0.2/30

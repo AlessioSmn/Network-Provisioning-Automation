@@ -1,0 +1,26 @@
+! Startup-config
+!
+hostname {{hostname}}
+echo "{{ hostname }}" > /etc/hostname
+!
+management api ssh
+    no shutdown
+!
+{# ============= Interfaces ========================================== -#}
+{% if interfaces -%}
+{% for int in interfaces -%}
+ip link set {{ int.name }} up
+{% if int.ipv4 -%}
+ip addr add {{ int.ipv4 }} dev {{ int.name }}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+!
+{# ============= Routing ========================================== -#}
+{% if ipv4_routes -%}
+{% for route in ipv4_routes -%}
+ip route add {{ route.destination }} via {{ route.next_hop }}
+{% endfor -%}
+{% endif -%}
+!
+end

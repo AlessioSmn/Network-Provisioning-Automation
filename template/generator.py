@@ -8,44 +8,62 @@ DBG_PRINT_TEMPLATE = False
 DBG_PRINT_DATA = False
 DBG_PRINT_CONTENT = True
 
+TEMPLATE_FRR = 'template_frr.j2'
+TEMPLATE_ALP = 'template_alp.j2'
+
 print("Syntax:")
-print("[python.exe | python3] [renderer.py] [template.j2] [data.yaml]")
-print("WIN: \tpython.exe .\\renderer.py startup_config_template.j2 [.yaml]")
-# python.exe .\renderer.py startup_config_template.j2 .\info_ceos2.yaml
-# python.exe .\renderer.py startup_config_template.j2 .\info_ceos1.yaml
+print("[python.exe | python3] [renderer.py] [data.yaml]")
+print("WIN: \tpython.exe .\\renderer.py [data.yaml]")
+# python.exe .\renderer.py .\info_ceos2.yaml
+# python.exe .\renderer.py .\info_ceos1.yaml
 
 # ========= Get arguments
-if len(sys.argv) != 3:
-    print("Error: must specify <template> <data> as arguments")
-    sys.exit(1)
-    
-# Template should be first argument
-temp_filename = sys.argv[1]
-if not os.path.isfile(temp_filename):
-    print(f"Error: '{temp_filename}' is not a valid file")
+if len(sys.argv) != 2:
+    print("Error: must specify <data> as arguments")
     sys.exit(1)
 
+
 # Data should be second argument
-data_filename = sys.argv[2]
+data_filename = sys.argv[1]
 if not os.path.isfile(data_filename):
     print(f"Error: '{data_filename}' is not a valid file")
     sys.exit(1)
 
 
-# ========= Load template and data
-# Load template
-environment = Environment(loader=FileSystemLoader("./"))
-template = environment.get_template(temp_filename)
-
-# Load data
+# ========= Load data
 with open(data_filename) as file:
     data = yaml.safe_load(file)
+
+# Default type: FRR
+cont_type = 'FRR' 
+if 'type' in data:
+    if data['type'].lower() == 'alpine':
+        cont_type = 'alpine'
+
+if DBG_PRINT_DATA:
+    print(data)
+
+# ========= Load template
+# Load template
+environment = Environment(
+    loader=FileSystemLoader("./"),
+    trim_blocks=True,
+    lstrip_blocks=True
+)
+template = None
+if cont_type == 'FRR':
+    template = environment.get_template(TEMPLATE_FRR)
+elif cont_type == 'alpine':
+    template = environment.get_template(TEMPLATE_ALP)
+
+if template is None:
+    print("Template / container type not recognized")
+    print("Template / container must be FRR or Alpine")
+    sys.exit(1)
 
 # Print for debug
 if DBG_PRINT_TEMPLATE:
     print(template)
-if DBG_PRINT_DATA:
-    print(data)
 
 
 # ========= Generate content
@@ -57,6 +75,9 @@ content = template.render(data)
 if DBG_PRINT_CONTENT:
     print(content)
 
+if 'config_filename' not in data:
+    print("Error: config_filename missing in data file")
+    sys.exit(1)
 content_filename = data['config_filename']
 
 with open(content_filename, "w", newline="") as f:

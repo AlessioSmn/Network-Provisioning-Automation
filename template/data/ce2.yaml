@@ -1,7 +1,7 @@
-config_filename: CE1.conf
+config_filename: CE2.conf
 
-name: CE1
-hostname: CE1
+name: CE2
+hostname: CE2
 username: admin
 password: False
 
@@ -10,13 +10,13 @@ routing_enabled: True
 interfaces:
 - name: eth1
   switchport: False
-  ipv4: 192.0.2.1/24
+  ipv4: 198.51.100.1/24
 - name: eth2
   switchport: False
-  ipv4: 10.1.1.1/30
+  ipv4: 10.2.2.1/30
 - name: eth3
   switchport: False
-  ipv4: 10.1.2.1/30
+  ipv4: 10.2.1.1/30
 
 
 ipv4_routes:

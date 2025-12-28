@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BR_CORE='br-clab-core'
-BR_INt='br-clab-int'
+BR_INT='br-clab-int'
 
 sudo ip link add $BR_CORE type bridge
 sudo ip link set $BR_CORE up

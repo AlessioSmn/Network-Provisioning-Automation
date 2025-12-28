@@ -1,0 +1,16 @@
+config_filename: GW2.conf
+
+name: GW2
+hostname: GW2
+username: admin
+password: False
+
+routing_enabled: True
+
+interfaces:
+- name: eth1
+  switchport: False
+  ipv4: 192.168.0.4/29
+- name: eth2
+  switchport: False
+  ipv4: 172.16.1.1/30
