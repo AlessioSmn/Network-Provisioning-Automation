@@ -1,6 +1,7 @@
 import sys
 import os
 import yaml
+from pathlib import Path
 import jinja2
 from jinja2 import Environment, FileSystemLoader
 
@@ -10,6 +11,8 @@ DBG_PRINT_CONTENT = True
 
 TEMPLATE_FRR = 'template_frr.j2'
 TEMPLATE_ALP = 'template_alp.j2'
+
+BASE_DIR = Path(__file__).resolve().parent
 
 print("Syntax:")
 print("[python.exe | python3] [renderer.py] [data.yaml]")
@@ -46,7 +49,7 @@ if DBG_PRINT_DATA:
 # ========= Load template
 # Load template
 environment = Environment(
-    loader=FileSystemLoader("./"),
+    loader=FileSystemLoader(str(BASE_DIR)),
     trim_blocks=True,
     lstrip_blocks=True
 )
@@ -75,11 +78,28 @@ content = template.render(data)
 if DBG_PRINT_CONTENT:
     print(content)
 
+
 if 'config_filename' not in data:
     print("Error: config_filename missing in data file")
     sys.exit(1)
+
+"""
 content_filename = data['config_filename']
 
 with open(content_filename, "w", newline="") as f:
     f.write(content)
 print(f"Content saved to {content_filename}")
+"""
+
+output_dir = BASE_DIR / ".." / "config" / "startup"
+output_dir = output_dir.resolve()
+
+config_filename = data['config_filename']
+output_path = output_dir / config_filename
+
+output_dir.mkdir(parents=True, exist_ok=True)
+
+with open(output_path, "w") as f:
+    f.write(content)
+
+print(f"Content saved to {output_path}")
