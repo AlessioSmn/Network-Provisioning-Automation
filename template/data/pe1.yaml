@@ -8,12 +8,42 @@ password: False
 routing_enabled: True
 
 interfaces:
+- name: lo
+  ipv4: 192.168.1.1/32
+  switchport: False
+  description: LOOPBACK
+
+- name: eth0
+  description: mgmt
+
 - name: eth1
-  switchport: False
   ipv4: 192.168.0.1/29
+  switchport: False
+  description: to_CORE
+
 - name: eth2
-  switchport: False
   ipv4: 10.1.1.2/30
-- name: eth3
   switchport: False
+  description: to_CE1
+
+- name: eth3
   ipv4: 10.2.1.2/30
+  switchport: False
+  description: to_CE2
+
+
+
+bgp:
+  AS: 65020
+  ID: 192.168.1.1
+
+  neighbors:
+  - ipv4: 10.1.1.1
+    AS: 64501
+  - ipv4: 10.2.1.1
+    AS: 64502
+
+  # No AS => same AS
+  - ipv4: 192.168.0.2
+  - ipv4: 192.168.0.3
+  - ipv4: 192.168.0.4

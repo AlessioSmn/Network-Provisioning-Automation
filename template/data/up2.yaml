@@ -8,9 +8,33 @@ password: False
 routing_enabled: True
 
 interfaces:
+- name: lo
+  ipv4: 172.31.0.2/32
+  switchport: False
+  description: LOOPBACK
+
+- name: eth0
+  description: mgmt
+
 - name: eth1
-  switchport: False
   ipv4: 203.0.113.2/24
-- name: eth2
   switchport: False
+  description: to_INTERNET
+
+- name: eth2
   ipv4: 172.16.1.2/30
+  switchport: False
+  description: to_GW2
+
+
+bgp:
+  AS: 65542
+  ID: 172.31.0.2
+
+  neighbors:
+  - ipv4: 172.16.1.1 # GW2
+    AS: 65020
+
+  networks:
+  - prefix: 203.0.113.0
+    mask: 255.255.255.0

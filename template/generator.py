@@ -5,7 +5,7 @@ from pathlib import Path
 import jinja2
 from jinja2 import Environment, FileSystemLoader
 
-DBG_PRINT_TEMPLATE = False
+DBG_PRINT_TEMPLATE = True
 DBG_PRINT_DATA = False
 DBG_PRINT_CONTENT = True
 
@@ -14,15 +14,15 @@ TEMPLATE_ALP = 'template_alp.j2'
 
 BASE_DIR = Path(__file__).resolve().parent
 
-print("Syntax:")
-print("[python.exe | python3] [renderer.py] [data.yaml]")
-print("WIN: \tpython.exe .\\renderer.py [data.yaml]")
 # python.exe .\renderer.py .\info_ceos2.yaml
 # python.exe .\renderer.py .\info_ceos1.yaml
 
 # ========= Get arguments
 if len(sys.argv) != 2:
     print("Error: must specify <data> as arguments")
+    print("Syntax:")
+    print("[python.exe | python3] [renderer.py] [data.yaml]")
+    print("WIN: \tpython.exe .\\renderer.py [data.yaml]")
     sys.exit(1)
 
 
@@ -30,6 +30,9 @@ if len(sys.argv) != 2:
 data_filename = sys.argv[1]
 if not os.path.isfile(data_filename):
     print(f"Error: '{data_filename}' is not a valid file")
+    print("Syntax:")
+    print("[python.exe | python3] [renderer.py] [data.yaml]")
+    print("WIN: \tpython.exe .\\renderer.py [data.yaml]")
     sys.exit(1)
 
 

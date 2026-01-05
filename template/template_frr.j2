@@ -2,32 +2,59 @@
 !
 hostname {{hostname}}
 !
+service integrated-vtysh-config
+service ssh
+!
 {% if password and password != False -%}
 username {{username}} secret {{password}}
 {% else -%}
 username {{username}} nopassword
 {% endif -%}
 !
-management api ssh
-    no shutdown
+line vty
+    login local
+    transport input ssh
 !
 {# ============= Interfaces ========================================== -#}
 {% if interfaces -%}
 {% for int in interfaces -%}
 interface {{int.name}}
-    {% if int.switchport == False -%}
-    no switchport
-    {% endif -%}
-    {% if int.ipv4 -%}
+    {% if int.ipv4 %}
     ip address {{int.ipv4}}
     {% endif -%}
-    {% if int.ipv6 -%}
-    ipv6 address {{int.ipv6}}
-    {% endif -%}
+    {% if int.description %}
+    description {{int.description}}
+    {% endif %}
     no shutdown
+    {% if int.switchport == False %}
+    no switchport
+    {% endif -%}
 !
 {% endfor -%}
 {% endif -%}
+!
+{# ============= BGP ========================================== -#}
+{% if bgp -%}
+router bgp {{bgp.AS}}
+    bgp router-id {{bgp.ID}}
+{% for nb in bgp.neighbors -%}
+    {% if nb.AS %}
+    neighbor {{nb.ipv4}} remote-as {{nb.AS}}
+    {% else %}
+    neighbor {{nb.ipv4}} remote-as {{bgp.AS}}
+    neighbor {{nb.ipv4}} next-hop-self
+    {% endif -%}
+{% endfor -%}
+{% for net in bgp.networks %}
+    network {{net.prefix}} mask {{net.mask}}
+{% endfor %}
+    no bgp ebgp-requires-policy
+    no bgp network import-check
+{% endif -%}
+!
+{% for nb in bgp.neighbors -%}
+clear ip bgp {{nb.ipv4}} soft in
+{% endfor -%}
 !
 {# ============= OSPF ========================================== -#}
 {% if ospf -%}

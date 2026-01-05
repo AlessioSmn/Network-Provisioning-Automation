@@ -52,15 +52,12 @@ topology:
     CE1:
       kind: linux
       image: quay.io/frrouting/frr:10.4.1
-      startup-config: ./config/startup/CE1.conf
-      enforce-startup-config: True
       binds:
         - ./config/startup/CE1.conf:/etc/frr/frr.conf
         - ./config/frr/daemons:/etc/frr/daemons
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     CE2:
@@ -72,7 +69,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     # Providers 
@@ -86,7 +82,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     UP2:
@@ -98,7 +93,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     # Core 
@@ -112,7 +106,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     PE2:
@@ -124,7 +117,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     GW1:
@@ -136,7 +128,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
 
     GW2:
@@ -148,7 +139,6 @@ topology:
         - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
         - ./config/frr/frr-cfg.sh:/frr-cfg.sh
       exec:
-        - echo "FRR Node startup"
         - bash /frr-cfg.sh
   
     # Bridges
