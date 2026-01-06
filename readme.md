@@ -17,6 +17,8 @@ Group project for Advanced Computer Networking course, MSc in Computer Engineeri
     - Mettere nel template
     - Mettere le informazioni BGP in tutti gli .yaml
 
+ - Ho messo ip route replace negli Alpine (per la default route), perchè ip route add fa conflitto (anche su nodo appena creato). Direi che è sufficiente dirlo nella documentazione, replace fa semplicemenete add se non c'è niente, altrimenti fa flush+add
+ 
 ## Description
 TODO
 ![Base structure](./img/project-base.jpg)
@@ -104,3 +106,18 @@ sudo docker rm -f <container-id>
 - Show interfaces:
     - Full:  `/ # ip [addr | address]`
     - Specific:  `/ # ip [addr | address] show dev <interface name>`
+
+## Useful commands
+ - Interfaces
+    - Show all available commands: `Node# show interface ?`
+    - Show brief summary: `Node# show interface brief`
+    - Show interfaces description: `Node# show interface description`
+ - IP
+    - Show all available commands: `Node# show ip ?`
+    - Show routing table: `Node# show ip route`
+    - Show BGP entries: `Node# show ip bgp`
+    - Show OSPF entries: `Node# show ip ospf`
+ - BGP
+    - Show all available commands: `Node# show bgp ?`
+    - Show brief summary: `Node# show bgp summary`
+    - Show neighbors in detail: `Node# show bgp neighbors`

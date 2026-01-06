@@ -1,4 +1,4 @@
-config_filename: n1.conf
+config_filename: n1.sh
 
 name: n1
 hostname: n1

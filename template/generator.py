@@ -5,9 +5,9 @@ from pathlib import Path
 import jinja2
 from jinja2 import Environment, FileSystemLoader
 
-DBG_PRINT_TEMPLATE = True
+DBG_PRINT_TEMPLATE = False
 DBG_PRINT_DATA = False
-DBG_PRINT_CONTENT = True
+DBG_PRINT_CONTENT = False
 
 TEMPLATE_FRR = 'template_frr.j2'
 TEMPLATE_ALP = 'template_alp.j2'

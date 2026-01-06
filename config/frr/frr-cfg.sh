@@ -1,7 +1,5 @@
 #!/bin/bash
 
-/usr/lib/frr/frrinit.sh start
-
 # Function to get IP addresses and default gateways
 get_mgmt_info() {
   mgmt_ipv4_addr=$(ip -4 addr show eth0 | grep inet | awk '{print $2}')
@@ -15,14 +13,7 @@ configure_vrf() {
   sysctl -w net.ipv6.conf.all.keep_addr_on_down=1
   ip link add ${CLAB_MGMT_VRF} type vrf table 1
   ip link set dev ${CLAB_MGMT_VRF} up
-
-  [ -n "${mgmt_default_ipv4_nh}" ] && ip route del default via ${mgmt_default_ipv4_nh}
-  [ -n "${mgmt_default_ipv6_nh}" ] && ip -6 route del default via ${mgmt_default_ipv6_nh}
-
   ip link set dev eth0 master ${CLAB_MGMT_VRF}
-
-  [ -n "${mgmt_default_ipv4_nh}" ] && ip route add default via ${mgmt_default_ipv4_nh} vrf ${CLAB_MGMT_VRF}
-  [ -n "${mgmt_default_ipv6_nh}" ] && ip -6 route add default via ${mgmt_default_ipv6_nh} vrf ${CLAB_MGMT_VRF}
 }
 
 # Function to configure FRR
@@ -34,32 +25,28 @@ ip address ${mgmt_ipv4_addr}
 exit
 write
 EOF
-
-  if [ -n "${mgmt_ipv6_addr}" ]; then
-    vtysh << EOF
-configure terminal
-interface eth0
-ipv6 address ${mgmt_ipv6_addr}
-exit
-write
-EOF
-  fi
 }
 
-echo "starting script"
-# Main script execution
-get_mgmt_info
-echo "mgmt set"
-if [ -n "${CLAB_MGMT_VRF}" ]; then
-  configure_vrf
-fi
-echo "vrf configured"
+# ================ Main script execution
 
-vtysh -f /etc/frr/frr.conf
-echo "startup config used"
+echo "======= FRR initialization ======="
+/usr/lib/frr/frrinit.sh start
 
-configure_frr
-echo "frr configured"
+# echo "======= Get management info ======="
+# get_mgmt_info
 
-vtysh -c "write memory"
-echo "all done"
+echo "======= Install SSH Server ======="
+apk add openssh
+
+echo "======= SSH Key generation ======="
+ssh-keygen -A
+echo "root:admin" | chpasswd
+
+echo "======= Start SSH ======="
+sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+/usr/sbin/sshd
+
+# echo "======= Management interface config ======="
+# configure_frr
+
+echo "======= END ======="

@@ -1,4 +1,4 @@
-config_filename: n3.conf
+config_filename: n3.sh
 
 name: n3
 hostname: n3

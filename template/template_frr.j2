@@ -3,7 +3,6 @@
 hostname {{hostname}}
 !
 service integrated-vtysh-config
-service ssh
 !
 {% if password and password != False -%}
 username {{username}} secret {{password}}

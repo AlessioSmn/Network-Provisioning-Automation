@@ -4,149 +4,108 @@ name: acn-prj
 prefix: __lab-name
 
 mgmt:
-  network: custom_mgmt               # management network name
+  network: acn_prj_mgmt              # name
   ipv4-subnet: 10.255.255.0/24       # ipv4 range
-  # ipv6-subnet: 3fff:10:255:255::/80  # ipv6 range
 
 
 topology:
 
+  groups:
+
+    frr_nodes:
+      kind: linux
+      image: quay.io/frrouting/frr:10.4.1
+      binds:
+        - ./config/startup/__clabNodeName__.conf:/etc/frr/frr.conf
+        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
+        - ./config/frr/daemons:/etc/frr/daemons
+        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
+      exec:
+        - bash /frr-cfg.sh
+
+    alp_nodes:
+      kind: linux
+      image: alpine:3.19.1
+      binds:
+        - ./config/alpine/alp-cfg.sh:/startup.sh
+        - ./config/startup/__clabNodeName__.sh:/conf.sh
+      exec:
+        - sh /startup.sh
+        - sh /conf.sh
+
+    pyt_nodes:
+      kind: linux
+      image: python:3.12-alpine
+      binds:
+        - ./config/alpine/alp-cfg.sh:/startup.sh
+        - ./config/startup/__clabNodeName__.sh:/conf.sh
+        - ./config/mngr/main.py:/main.py
+      exec:
+        - sh /startup.sh
+        - sh /conf.sh
+
+    bridges:
+      kind: bridge
+
+
   # List of all nodes
   nodes:
 
+    # === Endopints (Alpine) ===
+
     n1:
-      kind: linux
-      image: alpine:3.19.1
-      binds:
-        - ./config/linux-host-cfg.sh:/linux-cfg.sh
-      exec:
-        - sh /linux-cfg.sh
-      env:
-        MY_IP: 203.0.113.10/24
-        MY_GW: 203.0.113.1
-
+      group: alp_nodes
+      mgmt-ipv4: 10.255.255.201
     n2:
-      kind: linux
-      image: alpine:3.19.1
-      binds:
-        - ./config/linux-host-cfg.sh:/linux-cfg.sh
-      exec:
-        - sh /linux-cfg.sh
-      env:
-        MY_IP: 203.0.114.10/24
-        MY_GW: 203.0.114.1
-
+      group: alp_nodes
+      mgmt-ipv4: 10.255.255.202
     n3:
-      kind: linux
-      image: alpine:3.19.1
-      binds:
-        - ./config/linux-host-cfg.sh:/linux-cfg.sh
-      exec:
-        - sh /linux-cfg.sh
-      env:
-        MY_IP: 203.0.114.10/24
-        MY_GW: 203.0.114.1
+      group: alp_nodes
+      mgmt-ipv4: 10.255.255.203
+      
+    mngr:
+      group: pyt_nodes
+      mgmt-ipv4: 10.255.255.205
+
+
+    # === Routers (FRR) ===
 
     # Customers
-
     CE1:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/CE1.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
-
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.101
     CE2:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/CE2.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.102
 
     # Providers 
-
     UP1:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/UP1.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
-
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.141
     UP2:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/UP2.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.142
 
     # Core 
-
     PE1:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/PE1.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
-
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.111
     PE2:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/PE2.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
-
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.122
     GW1:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/GW1.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
-
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.131
     GW2:
-      kind: linux
-      image: quay.io/frrouting/frr:10.4.1
-      binds:
-        - ./config/startup/GW2.conf:/etc/frr/frr.conf
-        - ./config/frr/daemons:/etc/frr/daemons
-        - ./config/frr/vtysh.conf:/etc/frr/vtysh.conf
-        - ./config/frr/frr-cfg.sh:/frr-cfg.sh
-      exec:
-        - bash /frr-cfg.sh
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.132
   
-    # Bridges
+    # === Bridges ===
 
     br-clab-core:
-      kind: bridge
+      group: bridges
     br-clab-int:
-      kind: bridge
+      group: bridges
 
   # List of all links
   links:
@@ -162,6 +121,7 @@ topology:
     - endpoints: ["br-clab-core:eth2", "PE2:eth1"]
     - endpoints: ["br-clab-core:eth3", "GW1:eth1"]
     - endpoints: ["br-clab-core:eth4", "GW2:eth1"]
+    - endpoints: ["br-clab-core:eth5", "mngr:eth1"]
 
     - endpoints: ["GW1:eth2", "UP1:eth2"]
     - endpoints: ["GW2:eth2", "UP2:eth2"]
