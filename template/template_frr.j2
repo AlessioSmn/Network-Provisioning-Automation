@@ -1,8 +1,14 @@
 ! Startup-config
 !
+frr version 10.4.1_git
+frr defaults traditional
+!
 hostname {{hostname}}
 !
+domainname localdomain
+log syslog informational
 service integrated-vtysh-config
+service ssh
 !
 {% if password and password != False -%}
 username {{username}} secret {{password}}

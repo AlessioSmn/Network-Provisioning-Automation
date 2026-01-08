@@ -20,10 +20,10 @@ for shfile in config/startup/*.sh; do
     echo File "$shfile" is executable
 done
 
-# launch emulated network
+# Clear previous intance
 echo -n
 echo "========= (4) - CLAB Destory ========="
-sudo containerlab destroy --cleanup
+sudo containerlab destroy --cleanup -t acn.clab.yml
 
 # Print container possibly left out
 docker ps -a | grep acn-prj | awk '{print $1}' | xargs -r docker rm -f
@@ -31,7 +31,7 @@ docker volume ls | grep acn-prj | awk '{print $2}' | xargs -r docker volume rm
 ip netns | grep clab
 ip netns | grep acn-prj
 
-
+# launch emulated network
 echo -n
 echo "========= (4) - CLAB Deploy ========="
-sudo containerlab deploy
+sudo containerlab deploy -t acn.clab.yml
