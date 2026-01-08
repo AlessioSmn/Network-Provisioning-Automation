@@ -2,20 +2,9 @@
 Group project for Advanced Computer Networking course, MSc in Computer Engineering, Università di Pisa, A.Y. 2025/2026
 
 ## TODO
- - Fare uno script che banalmente lancia `python ./generator.py ./data/ce1.yaml` con tutti gli yaml presenti, per evitare di farlo a mano
-    - Volendo si pò fare un banale script che fa:
-    1. Lancia ./br.sh
-    2. Crea tutti gli startup-config
-    3. Fa sudo containerlab redeploy
- - Fare scrivere le risultanti startup config direttamente in /config/startup, così da non dover copiare e incollare ogni volta
-    - Formalizzare la struttura delle cartelle che ho messo per ora totalmente a caso
  - Decidere cosa fare della rete di management:
-    - Ha senso tenerla per entrare con ssh ma rompe il cazzo
-    - Non so se mettendola in una diversa vrf poi si accede comunque a tutto
+    - Decidere se lasciarla nella vrf deafult o in una separata (usare env: CLAB_VRF_MGMT come nell'esercizio del Virdis)
     - Quantomeno togliere la default route che va sulla management
- - BGP:
-    - Mettere nel template
-    - Mettere le informazioni BGP in tutti gli .yaml
 
  - Ho messo ip route replace negli Alpine (per la default route), perchè ip route add fa conflitto (anche su nodo appena creato). Direi che è sufficiente dirlo nella documentazione, replace fa semplicemenete add se non c'è niente, altrimenti fa flush+add
  
@@ -26,18 +15,76 @@ Our structure:
 ![Network structure](./img/project.jpg)
 
 ## Repository structure
+Compact:
 ```
 .
 ├───config
 │   ├───frr
+│   ├───alpine
+│   ├───mngr
 │   └───startup
 ├───doc
 ├───img
 └───template
     └───data
 ```
+Extended:
+```
+.
+│   acn.clab.yml
+│   br.sh
+│   clean.sh
+│   launch.sh
+│   controller.py
+│   readme.md
+│
+├───config
+│   │   linux-host-cfg.sh
+│   │
+│   ├───alpine
+│   │       alp-cfg.sh
+│   │
+│   ├───frr
+│   │       daemons
+│   │       frr-cfg.sh
+│   │       vtysh.conf
+│   │
+│   ├───mngr
+│   │       main.py
+│   │
+│   └───startup
+│           *.conf
+│           *.sh
+│
+├───doc
+│       ACN Project description.pdf
+│
+├───img
+│       *.drawio
+│       *.png
+│       *.jpg
+│
+└───template
+    │   generator.py
+    │   requirements.txt
+    │   template_alp.j2
+    │   template_frr.j2
+    │
+    └───data
+            *.yaml
+```
 
 ## Project deployment
+The entire project can be deployed by launching the dedicated script `launch.sh`:
+```bash
+./launch.sh
+```
+
+The network can be destoryed by launching the dedicated script `clean.sh`:
+```bash
+./clean.sh
+```
+In the following part we describe the steps carried in the launch script.
 ### Deploy
 
 1. Create bridges  
