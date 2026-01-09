@@ -4,14 +4,22 @@ Group project for Advanced Computer Networking course, MSc in Computer Engineeri
 ## TODO
  - Decidere cosa fare della rete di management:
     - Decidere se lasciarla nella vrf deafult o in una separata (usare env: CLAB_VRF_MGMT come nell'esercizio del Virdis)
+        - Sarebbe meglio metterla in VRF separate secondo me MA non so se poi con SSH si comanda comunque tutto (credo di si ma è da controllare comunque)
     - Quantomeno togliere la default route che va sulla management
 
  - Ho messo ip route replace negli Alpine (per la default route), perchè ip route add fa conflitto (anche su nodo appena creato). Direi che è sufficiente dirlo nella documentazione, replace fa semplicemenete add se non c'è niente, altrimenti fa flush+add
+ - **TASK 3**
+   - decidere come implemetare la matrice di traffico: semplice file direi che può andar bene
+   - algoritmo che da matrice di traffico restituisce i percorsi scelti 
+        - es: per 203.0.133.0/24 usare uscita GW2
+        - es: per 192.0.100.0/24 usare uscita PE2 (obbligato), pubblicare in uscita solo a GW1
+   - installare le regole nei quattro router dell'AS centrale via SSH
+   - testare bene se è tutto funzionante correttamente
  
 ## Description
-TODO
+Network to implement:
 ![Base structure](./img/project-base.jpg)
-Our structure:
+Chosen configuration:
 ![Network structure](./img/project.jpg)
 
 ## Repository structure
@@ -130,31 +138,23 @@ sudo docker rm -f <container-id>
 
 ## Containers usage
 ### FRR nodes
-- Access node
+- Access node (alternatives):
+    ```bash
+    docker exec -it <node-name> sh
+    ```
     ```bash
     docker exec -it <node-name> vtysh
+    ```
+    ```bash
+    ssh root@<node-mgmt-address>
+    (password)> admin 
     ```
 - Exit shell:
     ```bash
     exit
     ```
-- Show interfaces:
-    - Full:  `Node# show [i | int | interfaces]`
-    - Brief:  `Node# show [int | interfaces] [b | brief]`
-    - Specific:  `Node# show [int | interfaces] <interface name>`
 
-### Alpine nodes
-- Access node
-    ```bash
-    docker exec -it <node-name> sh
-    ```
-- Exit shell:
- `ctrl`+`p`+`q`
-- Show interfaces:
-    - Full:  `/ # ip [addr | address]`
-    - Specific:  `/ # ip [addr | address] show dev <interface name>`
-
-## Useful commands
+#### Useful commands
  - Interfaces
     - Show all available commands: `Node# show interface ?`
     - Show brief summary: `Node# show interface brief`
@@ -168,3 +168,20 @@ sudo docker rm -f <container-id>
     - Show all available commands: `Node# show bgp ?`
     - Show brief summary: `Node# show bgp summary`
     - Show neighbors in detail: `Node# show bgp neighbors`
+
+### Alpine nodes
+- Access node
+    ```bash
+    docker exec -it <node-name> sh
+    ```
+    ```bash
+    ssh root@<node-mgmt-address>
+    (password)> admin 
+    ```
+- Exit shell:
+ `ctrl`+`p`+`q`
+
+#### Useful commands
+- Show interfaces:
+    - Full:  `/ # ip [addr | address]`
+    - Specific:  `/ # ip [addr | address] show dev <interface name>`
