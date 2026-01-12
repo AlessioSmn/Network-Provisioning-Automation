@@ -15,6 +15,7 @@ topology:
     frr_nodes:
       env:
         CLAB_MGMT_VRF: MGMT
+        CLAB_MGMT_GW: 10.255.255.1
       kind: linux
       image: quay.io/frrouting/frr:10.4.1
       binds:
