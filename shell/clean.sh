@@ -1,8 +1,5 @@
-#/bin/bash
+#bin/bash
 
-# Clear previous intance
-echo -n
-echo "========= (4) - CLAB Destory ========="
 sudo containerlab destroy --cleanup -t acn.clab.yml
 
 # Print container possibly left out

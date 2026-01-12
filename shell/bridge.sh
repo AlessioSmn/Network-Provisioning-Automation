@@ -1,4 +1,4 @@
-#bin/bash
+#!/bin/bash
 
 BR_CORE='br-clab-core'
 BR_INT='br-clab-int'

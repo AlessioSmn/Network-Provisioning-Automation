@@ -1,37 +1,61 @@
-#/bin/bash
+#!/bin/bash
 
-# bridge creation
-echo -n
-echo "========= (1) - Bridge creation ========="
-./br.sh
+# Default values
+BRIDGE=NO
+CLEAN=NO
+TEMPLATE=NO
+IMAGES=NO
 
-# creating all startup-config
-echo -n
-echo "========= (2) - Startup-config files ========="
-for file in template/data/*.yaml; do
-    python3 template/generator.py "$file"
+print_help() {
+  cat <<EOF
+Usage: $0 [OPTIONS]
+
+Options (no arguments required):
+  -i, --images      Build images (default: NO)
+  -c, --clean       Clean previous launch (default: NO)
+  -b, --bridge      Create bridges (default: NO)
+  -t, --template    Compile templates (default: NO)
+  -h, --help        Show this help message and exit
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -b|--bridge) BRIDGE=YES ;;
+    -c|--clean) CLEAN=YES ;;
+    -t|--template) TEMPLATE=YES ;;
+    -i|--images) IMAGES=YES ;;
+    -h|--help) print_help; exit 0 ;;
+    --) shift; break ;;
+    *) echo "Unknown option: $1"; print_help; exit 1 ;;
+  esac
+  shift
 done
 
-# Make sh executable
-echo -n
-echo "========= (3) - Chmod ========="
-for shfile in config/startup/*.sh; do
-    chmod +x "$shfile"
-    echo File "$shfile" is executable
-done
+# Build images
+if [[ "$IMAGES" == "YES" ]]; then
+    echo -e "\n========= Build images ========="
+    ./shell/images.sh
+fi
 
-# Clear previous intance
-echo -n
-echo "========= (4) - CLAB Destory ========="
-sudo containerlab destroy --cleanup -t acn.clab.yml
+# Clear previous lab
+if [[ "$CLEAN" == "YES" ]]; then
+    echo -e "\n========= Clear CLAB ========="
+    ./shell/clean.sh
+fi
 
-# Print container possibly left out
-docker ps -a | grep acn-prj | awk '{print $1}' | xargs -r docker rm -f
-docker volume ls | grep acn-prj | awk '{print $2}' | xargs -r docker volume rm
-ip netns | grep clab
-ip netns | grep acn-prj
+# Create bridges
+if [[ "$BRIDGE" == "YES" ]]; then
+    echo -e "\n========= Setup bridges ========="
+    ./shell/bridge.sh
+fi
 
-# launch emulated network
-echo -n
-echo "========= (4) - CLAB Deploy ========="
+# Compile templates
+if [[ "$TEMPLATE" == "YES" ]]; then
+    echo -e "\n========= Templates ========="
+    ./shell/template.sh
+fi
+
+# Startup
+echo -e "\n========= CLAB Deploy ========="
 sudo containerlab deploy -t acn.clab.yml
