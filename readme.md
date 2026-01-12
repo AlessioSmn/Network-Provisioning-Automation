@@ -83,27 +83,43 @@ Extended:
 ```
 
 ## Project deployment
-First creating image for manager node (it must contain paramiko package to allow programmatic ssh)
-Go in /config/mngr dir and use the following command
-```bash
-docker build -t manager-img .
-```
 
 The entire project can be deployed by launching the dedicated script `launch.sh`:
 ```bash
 ./launch.sh
 ```
+Options available for the launch script:
+```bash
+> ./launch.sh -h
+Usage: ./launch.sh [OPTIONS]
+
+Options (no arguments required):
+  -i, --images      Build images (default: NO)
+  -c, --clean       Clean previous launch (default: NO)
+  -b, --bridge      Create bridges (default: NO)
+  -t, --template    Compile templates (default: NO)
+  -h, --help        Show this help message and exit
+```
 
 The network can be destoryed by launching the dedicated script `clean.sh`:
 ```bash
-./clean.sh
+./shell/clean.sh
 ```
 In the following part we describe the steps carried in the launch script.
-### Deploy
-
-1. Create bridges  
-  Note that `br-clab-core` and `br-clab-int` are the name of the bridges used in `acn.clab.yml`
-  - Via the provided script `br.sh`
+### Build images
+ - Via the provided script: `./shell/images.sh`.
+ - Manually:
+    1. Create image for FRR node (it must contain OpenSSH package to allow ssh access) It runs the following command:
+        ```bash
+        docker build -t frr-ssh:10.4.1 ./config/frr
+        ```
+    2. Create image for manager node (it must contain paramiko package to allow programmatic ssh). It runs the following command:
+        ```bash
+        docker build -t manager-img ./config/mngr
+        ```
+Note that `frr-ssh:10.4.1` and `manager-img` are the name of the images used in `acn.clab.yml`
+### Create bridges
+  - Via the provided script `./shell/bridge.sh`
   - Manually:
     ```bash
     sudo ip link add br-clab-core type bridge
@@ -112,8 +128,10 @@ In the following part we describe the steps carried in the launch script.
     sudo ip link add br-clab-int type bridge
     sudo ip link set br-clab-int up
     ```
+Note that `br-clab-core` and `br-clab-int` are the name of the bridges used in `acn.clab.yml`
 
-2. Deploy the network with containerlab
+### Deploy
+Deploy the network with containerlab
   ```bash
   sudo containerlab deploy [-t acn.clab.yml]
   ```

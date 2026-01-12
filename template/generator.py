@@ -2,7 +2,6 @@ import sys
 import os
 import yaml
 from pathlib import Path
-import jinja2
 from jinja2 import Environment, FileSystemLoader
 
 DBG_PRINT_TEMPLATE = False
@@ -86,14 +85,6 @@ if 'config_filename' not in data:
     print("Error: config_filename missing in data file")
     sys.exit(1)
 
-"""
-content_filename = data['config_filename']
-
-with open(content_filename, "w", newline="") as f:
-    f.write(content)
-print(f"Content saved to {content_filename}")
-"""
-
 output_dir = BASE_DIR / ".." / "config" / "startup"
 output_dir = output_dir.resolve()
 
@@ -105,4 +96,3 @@ output_dir.mkdir(parents=True, exist_ok=True)
 with open(output_path, "w") as f:
     f.write(content)
 
-print(f"Content saved to {output_path}")

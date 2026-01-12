@@ -2,14 +2,14 @@
 
 # ================ Main script execution
 
-echo "=-=-=-= FRR initialization =-=-=-="
+echo "======= FRR initialization ======="
 
-echo "======= Install SSH Server ======="
-apk add openssh
+# Start watchfrr
+/usr/lib/frr/frrinit.sh start
 
-echo "======= SSH Key generation ======="
-ssh-keygen -A
-echo "root:admin" | chpasswd
+# Configuration is automatically loaded:
+# vtysh -f /etc/frr/frr.conf
+
 
 # VRF Management (if specified)
 if [ -n "${CLAB_MGMT_VRF}" ]; then
@@ -31,28 +31,14 @@ if [ -n "${CLAB_MGMT_VRF}" ]; then
     # ip route
 fi
 
-# Sleep to let daemons be up
-sleep 10
-
-echo "======= Start SSH ======="
+echo "======= Start ssh on vrf ======="
 VRF_EXEC=""
 if [ -n "${CLAB_MGMT_VRF}" ]; then
     VRF_NAME="${CLAB_MGMT_VRF}"
     VRF_EXEC="ip vrf exec ${VRF_NAME}"
 fi
-$VRF_EXEC sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+# $VRF_EXEC sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 $VRF_EXEC /usr/sbin/sshd
 
+echo "======= END ======="
 
-echo "======= Save Config ======="
-write file
-
-echo "=-=-=-= END =-=-=-="
-
-# NOTE
-
-# watchfrr is automatically started
-# /usr/lib/frr/frrinit.sh start
-
-# Configuration is automatically loaded:
-# vtysh -f /etc/frr/frr.conf
