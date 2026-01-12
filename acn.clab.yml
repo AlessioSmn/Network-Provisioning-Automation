@@ -37,7 +37,7 @@ topology:
 
     pyt_nodes:
       kind: linux
-      image: python:3.12-alpine
+      image: manager-img
       binds:
         - ./config/alpine/alp-cfg.sh:/startup.sh
         - ./config/startup/__clabNodeName__.sh:/conf.sh

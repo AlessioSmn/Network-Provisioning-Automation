@@ -83,6 +83,12 @@ Extended:
 ```
 
 ## Project deployment
+First creating image for manager node (it must contain paramiko package to allow programmatic ssh)
+Go in /config/mngr dir and use the following command
+```bash
+docker build -t manager-img .
+```
+
 The entire project can be deployed by launching the dedicated script `launch.sh`:
 ```bash
 ./launch.sh
