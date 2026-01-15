@@ -10,11 +10,13 @@ mgmt:
 
 topology:
 
+  defaults:
+    env:
+      CLAB_MGMT_VRF: MGMT
+      CLAB_MGMT_GW: 10.255.255.1
+  
   groups:
     frr_nodes:
-      env:
-        CLAB_MGMT_VRF: MGMT
-        CLAB_MGMT_GW: 10.255.255.1
       kind: linux
       image: frr-ssh:10.4.1
       binds:
@@ -27,24 +29,24 @@ topology:
 
     alp_nodes:
       kind: linux
-      image: alpine:3.19.1
+      image: alpine-ssh:3.19.1
       binds:
-        - ./config/alpine/alp-cfg.sh:/startup.sh
+        - ./config/alpine/alp-cfg.sh:/alp-cfg.sh
         - ./config/startup/__clabNodeName__.sh:/conf.sh
       exec:
-        - sh /startup.sh
+        - sh /alp-cfg.sh
         - sh /conf.sh
 
     pyt_nodes:
       kind: linux
-      image: manager-img
+      image: python-ssh:3.12-alpine
       binds:
-        - ./config/alpine/alp-cfg.sh:/startup.sh
+        - ./config/alpine/alp-cfg.sh:/alp-cfg.sh
         - ./config/startup/__clabNodeName__.sh:/conf.sh
         - ./config/mngr/main.py:/main.py
         - ./config/mngr/traffic-matrices.json:/traffic-matrices.json
       exec:
-        - sh /startup.sh
+        - sh /alp-cfg.sh
         - sh /conf.sh
 
     bridges:
