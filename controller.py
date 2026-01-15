@@ -33,7 +33,7 @@ CMD_MAP = {
         "linux": None,
     },
     "bgp det": {
-        "frr": "vtysh -c 'show bgp summary'",
+        "frr": "vtysh -c 'show bgp ipv4 detail'",
         "linux": None,
     },
     "int bri": {

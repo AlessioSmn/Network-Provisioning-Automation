@@ -42,6 +42,7 @@ topology:
         - ./config/alpine/alp-cfg.sh:/startup.sh
         - ./config/startup/__clabNodeName__.sh:/conf.sh
         - ./config/mngr/main.py:/main.py
+        - ./config/mngr/traffic-matrices.json:/traffic-matrices.json
       exec:
         - sh /startup.sh
         - sh /conf.sh
