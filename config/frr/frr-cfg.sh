@@ -31,14 +31,13 @@ if [ -n "${CLAB_MGMT_VRF}" ]; then
     # ip route
 fi
 
-echo "======= Start ssh on vrf ======="
-VRF_EXEC=""
+echo "======= Start ssh on default vrf ======="
+/usr/sbin/sshd -o PidFile=/run/sshd_default.pid
+
 if [ -n "${CLAB_MGMT_VRF}" ]; then
-    VRF_NAME="${CLAB_MGMT_VRF}"
-    VRF_EXEC="ip vrf exec ${VRF_NAME}"
+echo "======= Start ssh on mgmt vrf ======="
+ip vrf exec "${CLAB_MGMT_VRF}" /usr/sbin/sshd -o PidFile=/run/sshd_mgmt.pid
 fi
-# $VRF_EXEC sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
-$VRF_EXEC /usr/sbin/sshd
 
 echo "======= END ======="
 
