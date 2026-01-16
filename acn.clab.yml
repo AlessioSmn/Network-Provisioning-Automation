@@ -64,9 +64,9 @@ topology:
     n2:
       group: alp_nodes
       mgmt-ipv4: 10.255.255.202
-    n3:
-      group: alp_nodes
-      mgmt-ipv4: 10.255.255.203
+    # n3:
+    #  group: alp_nodes
+    #  mgmt-ipv4: 10.255.255.203
       
     mngr:
       group: pyt_nodes
@@ -109,8 +109,18 @@ topology:
 
     br-clab-core:
       group: bridges
-    br-clab-int:
-      group: bridges
+    #br-clab-int:
+    #  group: bridges
+
+    # === Internet ===
+
+    INT:
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.141
+      binds: 
+        - ./config/frr/int-cfg.sh:/int-cfg.sh
+      exec:
+        - bash /int-cfg.sh
 
 
   # List of all links
@@ -132,7 +142,10 @@ topology:
     - endpoints: ["GW1:eth2", "UP1:eth2"]
     - endpoints: ["GW2:eth2", "UP2:eth2"]
 
+    - endpoints: ["UP1:eth1", "INT:eth1"]
+    - endpoints: ["UP2:eth1", "INT:eth2"]
+
     # Note: using the same interface names as br-clab-core will get error
-    - endpoints: ["UP1:eth1", "br-clab-int:eth8"]
-    - endpoints: ["UP2:eth1", "br-clab-int:eth9"]
-    - endpoints: ["n3:eth1", "br-clab-int:eth10"]
+    # - endpoints: ["UP1:eth1", "br-clab-int:eth8"]
+    # - endpoints: ["UP2:eth1", "br-clab-int:eth9"]
+    # - endpoints: ["n3:eth1", "br-clab-int:eth10"]

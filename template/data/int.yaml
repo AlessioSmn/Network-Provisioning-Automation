@@ -1,0 +1,149 @@
+config_filename: INT.conf
+
+name: INT
+hostname: INT
+username: admin
+password: False
+
+routing_enabled: True
+
+interfaces:
+  - name: eth0
+    description: MANAGEMENT
+
+  - name: eth1
+    ipv4: 172.16.2.2/30
+    switchport: False
+    description: to_UP1
+
+  - name: eth2
+    ipv4: 172.16.3.2/30
+    switchport: False
+    description: to_UP2
+
+  - name: lo1
+    ipv4: 203.0.113.1/28
+    switchport: False
+    description: LOOPBACK1
+
+  - name: lo2
+    ipv4: 203.0.113.17/28
+    switchport: False
+    description: LOOPBACK2
+
+  - name: lo3
+    ipv4: 203.0.113.33/28
+    switchport: False
+    description: LOOPBACK3
+
+  - name: lo4
+    ipv4: 203.0.113.49/28
+    switchport: False
+    description: LOOPBACK4
+
+  - name: lo5
+    ipv4: 203.0.113.65/28
+    switchport: False
+    description: LOOPBACK5
+
+  - name: lo6
+    ipv4: 203.0.113.81/28
+    switchport: False
+    description: LOOPBACK6
+
+  - name: lo7
+    ipv4: 203.0.113.97/28
+    switchport: False
+    description: LOOPBACK7
+
+  - name: lo8
+    ipv4: 203.0.113.113/28
+    switchport: False
+    description: LOOPBACK8
+
+  - name: lo9
+    ipv4: 203.0.113.129/28
+    switchport: False
+    description: LOOPBACK9
+
+  - name: lo10
+    ipv4: 203.0.113.145/28
+    switchport: False
+    description: LOOPBACK10
+
+  - name: lo11
+    ipv4: 203.0.113.161/28
+    switchport: False
+    description: LOOPBACK11
+
+  - name: lo12
+    ipv4: 203.0.113.177/28
+    switchport: False
+    description: LOOPBACK12
+
+  - name: lo13
+    ipv4: 203.0.113.193/28
+    switchport: False
+    description: LOOPBACK13
+
+  - name: lo14
+    ipv4: 203.0.113.209/28
+    switchport: False
+    description: LOOPBACK14
+
+  - name: lo15
+    ipv4: 203.0.113.225/28
+    switchport: False
+    description: LOOPBACK15
+
+  - name: lo16
+    ipv4: 203.0.113.241/28
+    switchport: False
+    description: LOOPBACK16
+
+bgp:
+  AS: 65000
+  ID: 203.0.113.1
+  # lo_iBGP: False
+  # lo_eBGP: False
+  # lo: lo
+
+  neighbors:
+  - ipv4: 172.16.2.1 # UP1
+    AS: 65541
+  - ipv4: 172.16.3.1 # UP2
+    AS: 65542
+  
+  networks:
+  - prefix: 203.0.113.0
+    mask: 255.255.255.240
+  - prefix: 203.0.113.16
+    mask: 255.255.255.240
+  - prefix: 203.0.113.32
+    mask: 255.255.255.240
+  - prefix: 203.0.113.48
+    mask: 255.255.255.240
+  - prefix: 203.0.113.64
+    mask: 255.255.255.240
+  - prefix: 203.0.113.80
+    mask: 255.255.255.240
+  - prefix: 203.0.113.96
+    mask: 255.255.255.240
+  - prefix: 203.0.113.112
+    mask: 255.255.255.240
+  - prefix: 203.0.113.128
+    mask: 255.255.255.240
+  - prefix: 203.0.113.144
+    mask: 255.255.255.240
+  - prefix: 203.0.113.160
+    mask: 255.255.255.240
+  - prefix: 203.0.113.176
+    mask: 255.255.255.240
+  - prefix: 203.0.113.192
+    mask: 255.255.255.240
+  - prefix: 203.0.113.208
+    mask: 255.255.255.240
+  - prefix: 203.0.113.224
+    mask: 255.255.255.240
+  - prefix: 203.0.113.240
+    mask: 255.255.255.240
