@@ -8,6 +8,11 @@ password: False
 routing_enabled: True
 
 interfaces:
+  - name: lo
+    ipv4: 203.0.114.1/32
+    switchport: False
+    description: LOOPBACK
+
   - name: eth0
     description: MANAGEMENT
 
@@ -102,11 +107,11 @@ interfaces:
     description: LOOPBACK16
 
 bgp:
-  AS: 65000
-  ID: 203.0.113.1
-  # lo_iBGP: False
-  # lo_eBGP: False
-  # lo: lo
+  AS: 65551
+  ID: 203.0.114.1
+  lo_iBGP: False
+  lo_eBGP: False
+  lo: lo
 
   neighbors:
   - ipv4: 172.16.2.1 # UP1
