@@ -31,6 +31,15 @@ if [ -n "${CLAB_MGMT_VRF}" ]; then
     # ip route
 fi
 
+# Activate Internet node Loopback interfaces (if specified)
+if [ -n "${INT_LO_IFS}" ]; then
+    echo "======= Loopback interfaces ======="
+    for i in $(seq 1 16); do
+        ip link add lo$i type dummy
+        ip link set lo$i up
+    done
+fi
+
 echo "======= Start ssh on default vrf ======="
 /usr/sbin/sshd -o PidFile=/run/sshd_default.pid
 
