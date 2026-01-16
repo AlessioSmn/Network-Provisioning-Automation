@@ -9,12 +9,12 @@ routing_enabled: True
 
 interfaces:
 - name: lo
-  ipv4: 192.168.1.2/32
+  ipv4: 192.168.100.12/32
   switchport: False
   description: LOOPBACK
 
 - name: eth0
-  description: mgmt
+  description: MANAGEMENT
 
 - name: eth1
   ipv4: 192.168.0.2/29
@@ -31,16 +31,28 @@ interfaces:
   switchport: False
   description: to_CE1
 
+ospf:
+  pid: 1
+  router_id: 192.168.100.12
+  passive_interfaces: [eth0, eth2, eth3]
+  networks:
+  - network: 192.168.0.0/29
+    area: 0
+  - network: 192.168.100.12/32
+    area: 0
 
 bgp:
   AS: 65020
-  ID: 192.168.1.2
+  ID: 192.168.100.12
+  lo_iBGP: True
+  lo_eBGP: False
+  lo: lo
 
   neighbors:
   - ipv4: 10.1.2.1 # CE1
     AS: 64501
   - ipv4: 10.2.2.1 # CE2
     AS: 64502
-  - ipv4: 192.168.0.1
-  - ipv4: 192.168.0.3
-  - ipv4: 192.168.0.4
+  - ipv4: 192.168.100.11
+  - ipv4: 192.168.100.21
+  - ipv4: 192.168.100.22

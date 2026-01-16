@@ -14,7 +14,7 @@ interfaces:
   description: LOOPBACK
 
 - name: eth0
-  description: mgmt
+  description: MANAGEMENT
 
 - name: eth1
   ipv4: 203.0.113.2/24

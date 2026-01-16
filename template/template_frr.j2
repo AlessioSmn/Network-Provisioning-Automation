@@ -45,9 +45,15 @@ router bgp {{bgp.AS}}
 {% for nb in bgp.neighbors -%}
     {% if nb.AS %}
     neighbor {{nb.ipv4}} remote-as {{nb.AS}}
+    {% if bgp.lo_eBGP %}
+    neighbor {{nb.ipv4}} update-source {{bgp.lo}}
+    {% endif -%}
     {% else %}
     neighbor {{nb.ipv4}} remote-as {{bgp.AS}}
     neighbor {{nb.ipv4}} next-hop-self
+    {% if bgp.lo_iBGP %}
+    neighbor {{nb.ipv4}} update-source {{bgp.lo}}
+    {% endif -%}
     {% endif -%}
 {% endfor -%}
 {% for net in bgp.networks %}
@@ -63,15 +69,16 @@ clear ip bgp {{nb.ipv4}} soft in
 !
 {# ============= OSPF ========================================== -#}
 {% if ospf -%}
-router ospf {{ospf.pid}}
+router ospf
     router-id {{ospf.router_id}}
-    {% for pi in ospf.passive_interfaces -%}
-        passive-interface {{pi}}
-    {% endfor -%}
     {% for net in ospf.networks -%}
     network {{net.network}} area {{net.area}}
     {% endfor %}
 !
+{% for pi in ospf.passive_interfaces -%}
+interface {{pi}}
+    ip ospf passive
+{% endfor -%}
 {% endif -%}
 {% if ipv4_routes -%}
 {% for route in ipv4_routes -%}
