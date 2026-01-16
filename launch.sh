@@ -2,10 +2,10 @@
 
 # Default values
 BRIDGE=NO
-CLEAN=NO
+CLEAN=YES
 TEMPLATE=NO
 IMAGES=NO
-SSHCERT=NO
+SSHCERT=YES
 
 print_help() {
   cat <<EOF
@@ -13,10 +13,10 @@ Usage: $0 [OPTIONS]
 
 Options (no arguments required):
   -i, --images      Build images (default: NO)
-  -c, --clean       Clean previous launch (default: NO)
+  -c, --no_clean    Clean previous launch (default: YES)
   -b, --bridge      Create bridges (default: NO)
   -t, --template    Compile templates (default: NO)
-  -s, --sshclean    Clean SSH certificates of nodes (default: NO)
+  -s, --sshkeep     Clean SSH certificates of nodes (default: YES)
   -h, --help        Show this help message and exit
 EOF
 }
@@ -24,10 +24,10 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -b|--bridge) BRIDGE=YES ;;
-    -c|--clean) CLEAN=YES ;;
+    -c|--no_clean) CLEAN=NO ;;
     -t|--template) TEMPLATE=YES ;;
     -i|--images) IMAGES=YES ;;
-    -s|--sshclean) SSHCERT=YES ;;
+    -s|--sshclean) SSHCERT=NO ;;
     -h|--help) print_help; exit 0 ;;
     --) shift; break ;;
     *) echo "Unknown option: $1"; print_help; exit 1 ;;
