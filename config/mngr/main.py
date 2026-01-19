@@ -8,10 +8,17 @@ INTERVAL = 60
 
 MY_AS = 65020
 
-PE1_IP = "192.168.0.1"
-PE2_IP = "192.168.0.2"
-GW1_IP = "192.168.0.3"
-GW2_IP = "192.168.0.4"
+PE1_IP = "192.168.100.11"
+PE2_IP = "192.168.100.12"
+GW1_IP = "192.168.100.21"
+GW2_IP = "192.168.100.22"
+
+lo_ip_map = {
+    PE1_IP : "192.168.0.1",
+    PE2_IP : "192.168.0.2",
+    GW1_IP : "192.168.0.3",
+    GW2_IP : "192.168.0.4"
+}
 
 UP1_IP = "172.16.0.2"
 UP2_IP = "172.16.1.2"
@@ -33,7 +40,6 @@ def configure_bgp_params(gw_ip, route_outbound_map_name, route_inbound_map_name,
     other_up = UP2_IP if gw_ip == GW1_IP else UP1_IP
     my_up_as = UP1_AS if gw_ip == GW1_IP else UP2_AS
     other_up_as = UP2_AS if gw_ip == GW1_IP else UP1_AS
-
 
     cmds = ['configure terminal']
 
@@ -61,29 +67,41 @@ def configure_bgp_params(gw_ip, route_outbound_map_name, route_inbound_map_name,
 
         seq += 10
 
-    cmds.append(f'route-map {route_outbound_map_name} permit {seq}')
+    cmds.append(f'route-map {route_outbound_map_name} permit 999')
 
     for peer_ip in ALL_PEERS:
         if peer_ip != gw_ip: 
             cmds.append(f'router bgp {MY_AS}')
             cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
-            cmds.append(f' neighbor {peer_ip} route-map {route_outbound_map_name} in')
-            cmds.append(f' clear bgp ipv4 {peer_ip} soft')
+            cmds.append(f' neighbor {peer_ip} route-map {route_inbound_map_name} out')
 
     cmds.append(f' neighbor {my_up} remote-as {my_up_as}')
-    cmds.append(f' neighbor {my_up} route-map {route_inbound_map_name} out')
+    cmds.append(f' neighbor {my_up} route-map {route_outbound_map_name} in')
 
     cmds.append('end')
 
-    vtysh_cmd = 'vtysh ' + ' '.join([f'-c "{c}"' for c in cmds])
+    vtysh_cmd = "vtysh \\\n" + " \\\n".join([f'    -c "{c}"' for c in cmds])
 
     print(f"Executing the following command in GW {gw_ip}:")
     print(vtysh_cmd)
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(gw_ip, username=USERNAME, password=PASSWORD)
+    ssh.connect(lo_ip_map[gw_ip], username=USERNAME, password=PASSWORD)
     stdin, stdout, stderr = ssh.exec_command(vtysh_cmd)
+
+    for peer_ip in ALL_PEERS:
+        if peer_ip != gw_ip:
+            cmd = f"vtysh -c 'clear ip bgp {peer_ip} soft in'"
+            print(cmd)
+            stdin, stdout, stderr = ssh.exec_command(cmd)
+            stdout.channel.recv_exit_status()
+            out = stdout.read().decode()
+            err = stderr.read().decode()
+            if out:
+                print(f"[{peer_ip}] OUT: {out}")
+            if err:
+                print(f"[{peer_ip}] ERR: {err}")
 
     print(f"=== Output from {gw_ip} ===")
     print(stdout.read().decode())
@@ -113,21 +131,29 @@ def configure_bgp_params(gw_ip, route_outbound_map_name, route_inbound_map_name,
 
         seq += 10
 
+    cmds.append(f'route-map {other_inbound_map_name} permit 999')
+    
     cmds.append(f'router bgp {MY_AS}')
 
     cmds.append(f' neighbor {other_up} remote-as {other_up_as}')
     cmds.append(f' neighbor {other_up} route-map {other_inbound_map_name} out')
 
+    for peer_ip in ALL_PEERS:
+        if peer_ip != other_gw: 
+            cmds.append(f'router bgp {MY_AS}')
+            cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
+            cmds.append(f' neighbor {peer_ip} route-map {other_inbound_map_name} out')
+
     cmds.append('end')
 
-    vtysh_cmd = 'vtysh ' + ' '.join([f'-c "{c}"' for c in cmds])
+    vtysh_cmd = "vtysh \\\n" + " \\\n".join([f'    -c "{c}"' for c in cmds])
 
     print(f"Executing the following command in GW {other_gw}:")
     print(vtysh_cmd)
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(other_gw, username=USERNAME, password=PASSWORD)
+    ssh.connect(lo_ip_map[other_gw], username=USERNAME, password=PASSWORD)
     stdin, stdout, stderr = ssh.exec_command(vtysh_cmd)
 
     print(f"=== Output from {other_gw} ===")
@@ -136,8 +162,8 @@ def configure_bgp_params(gw_ip, route_outbound_map_name, route_inbound_map_name,
 
     ssh.close()
 
+time.sleep(30)
 while True:
-    time.sleep(INTERVAL)
 
     current_matrix = traffic_matrices[matrix_index]
     
@@ -194,3 +220,4 @@ while True:
     )
 
     matrix_index = (matrix_index + 1) % len(traffic_matrices)
+    time.sleep(3000)
