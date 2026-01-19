@@ -55,18 +55,22 @@ def configure_bgp_params(gw_ip, route_outbound_map_name, route_inbound_map_name,
         cmds.append(f' match ip address prefix-list {pl_name}')
 
         if(entry == CU1_NET or entry == CU2_NET):
-            cmds.append(f' set local-preference 200')
-        else:
             cmds.append(f' set metric 50')
+        else:
+            cmds.append(f' set local-preference 200')
 
         seq += 10
+
+    cmds.append(f'route-map {route_outbound_map_name} permit {seq}')
 
     for peer_ip in ALL_PEERS:
         if peer_ip != gw_ip: 
             cmds.append(f'router bgp {MY_AS}')
-            cmds.append(f' neighbor {peer_ip} route-map {route_outbound_map_name} out')
+            cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
+            cmds.append(f' neighbor {peer_ip} route-map {route_outbound_map_name} in')
+            cmds.append(f' clear bgp ipv4 {peer_ip} soft')
 
-    cmds.append(f' neighbor {my_up_as} remote-as')
+    cmds.append(f' neighbor {my_up} remote-as {my_up_as}')
     cmds.append(f' neighbor {my_up} route-map {route_inbound_map_name} out')
 
     cmds.append('end')
