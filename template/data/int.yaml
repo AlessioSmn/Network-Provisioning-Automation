@@ -9,7 +9,7 @@ routing_enabled: True
 
 interfaces:
   - name: lo
-    ipv4: 203.0.113.1/32
+    ipv4: 203.0.114.1/32
     switchport: False
     description: LOOPBACK
 
@@ -26,9 +26,19 @@ interfaces:
     switchport: False
     description: to_UP2
 
+  - name: eth3
+    ipv4: 203.0.113.1/25
+    switchport: False
+    description: to_n3
+
+  - name: eth4
+    ipv4: 203.0.113.129/25
+    switchport: False
+    description: to_n4
+
 bgp:
   AS: 65551
-  ID: 203.0.113.1
+  ID: 172.100.0.1/32
   lo_iBGP: False
   lo_eBGP: False
   lo: lo
@@ -41,4 +51,6 @@ bgp:
   
   networks:
   - prefix: 203.0.113.0
-    mask: 255.255.255.0
+    mask: 255.255.255.128
+  - prefix: 203.0.113.128
+    mask: 255.255.255.128

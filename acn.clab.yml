@@ -111,6 +111,13 @@ topology:
       group: frr_nodes
       mgmt-ipv4: 10.255.255.141
 
+    n3:
+      group: alp_nodes
+      mgmt-ipv4: 10.255.255.151
+
+    n4:
+      group: alp_nodes
+      mgmt-ipv4: 10.255.255.152
 
   # List of all links
   links:
@@ -133,4 +140,7 @@ topology:
 
     - endpoints: ["UP1:eth1", "INT:eth1"]
     - endpoints: ["UP2:eth1", "INT:eth2"]
+
+    - endpoints: ["INT:eth3", "n3:eth1"]
+    - endpoints: ["INT:eth4", "n4:eth1"]
     
