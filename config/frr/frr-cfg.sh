@@ -33,7 +33,7 @@ fi
 
 # Activate Internet node Loopback interfaces (if specified)
 if [ -n "${INT_LO_IFS}" ]; then
-    echo "======= Loopback interfaces ======="
+    echo "======= Loopback interfaces (1 to 16) ======="
     for i in $(seq 1 16); do
         ip link add lo$i type dummy
         ip link set lo$i up

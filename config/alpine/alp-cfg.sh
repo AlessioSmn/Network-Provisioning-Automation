@@ -27,4 +27,7 @@ echo "======= Start ssh on mgmt vrf ======="
 ip vrf exec "${CLAB_MGMT_VRF}" /usr/sbin/sshd -o PidFile=/run/sshd_mgmt.pid
 fi
 
+echo "======= Load startup config ======="
+./conf.sh
+
 echo "======= END ======="
