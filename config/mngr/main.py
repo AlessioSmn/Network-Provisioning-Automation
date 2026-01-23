@@ -239,9 +239,10 @@ while True:
     At the end, bucket1 will be used to determine which routes must have a 200 local-pref in GW1 (to-internet routes) and which routes must be filtered in 
         GW2 (from-internet routes). The opposite goes for bucket2.
 
-    Extra: suppose we store a route from CU1 to internet and then a route, the route from CU2 to internet must be served from the same GW of the previous one.
-        It's not possible to have GW1 serving (CU1 -> net) and GW2 (CU2 -> net) 
-        (unless using other techniques such as traffic engineering or segment routing)
+    Extra: suppose we store a route from CU1 to internet and then a route from CU2 to internet, 
+        -> the route from CU2 to internet must be served from the same GW of the previous one.
+        It's not possible to have GW1 serving (CU1 -> net) and GW2 (CU2 -> net) (unless using other techniques such as traffic engineering or segment routing)
+        This means that routes with the same destination must go into the same bucket.
     """
 
     print(f"\n##########################################\nCONFIGURING BGP PARAMETERS ITER {iter}\n##########################################\n")
