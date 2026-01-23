@@ -33,7 +33,6 @@ topology:
         - ./config/startup/__clabNodeName__.sh:/conf.sh
       exec:
         - sh /alp-cfg.sh
-        - sh /conf.sh
 
     pyt_nodes:
       kind: linux
@@ -45,7 +44,6 @@ topology:
         - ./config/mngr/traffic-matrices.json:/traffic-matrices.json
       exec:
         - sh /alp-cfg.sh
-        - sh /conf.sh
 
     bridges:
       kind: bridge

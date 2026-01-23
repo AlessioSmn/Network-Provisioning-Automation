@@ -1,5 +1,17 @@
 # Network Provisioning and Automation
 Group project for Advanced Computer Networking course, MSc in Computer Engineering, Università di Pisa, A.Y. 2025/2026
+##### Table of Contents  
+- [Description](#description)  
+- [Repository structure](#repository-structure)
+- [Project deployment](#project-deployment)
+  - [Project cleanup](#project-cleanup)
+  - [Build images](#build-images)
+  - [Create bridges](#create-bridges)
+  - [Compile templates](#compile-templates)
+- [Useful Containerlab commands](#useful-containerlab-commands)
+- [Containers usage](#containers-usage)
+  - [FRR nodes](#frr-nodes)
+  - [Alpine nodes](#alpine-nodes)
 
 ## TODO
  - Decidere cosa fare della rete di management:
@@ -36,7 +48,9 @@ Compact:
 └───template
     └───data
 ```
-Extended:
+
+<details>
+<summary>Extended structure:</summary>
 ```
 .
 │   acn.clab.yml
@@ -81,6 +95,7 @@ Extended:
     └───data
             *.yaml
 ```
+</details>
 
 ## Project deployment
 
@@ -90,45 +105,88 @@ The entire project can be deployed by launching the dedicated script `launch.sh`
 ```
 Options available for the launch script:
 ```bash
-> ./launch.sh -h
+>  ./launch.sh -h
 Usage: ./launch.sh [OPTIONS]
 
 Options (no arguments required):
   -i, --images      Build images (default: NO)
-  -c, --clean       Clean previous launch (default: NO)
+  -c, --no_clean    Clean previous launch (default: YES)
   -b, --bridge      Create bridges (default: NO)
   -t, --template    Compile templates (default: NO)
+  -s, --sshkeep     Clean SSH certificates of nodes (default: YES)
   -h, --help        Show this help message and exit
 ```
+For the first deployment of the project the user should run the launch script with the following options:
+```bash
+./launch.sh --images --bridge --template
+```
 
+### Project cleanup
 The network can be destoryed by launching the dedicated script `clean.sh`:
 ```bash
 ./shell/clean.sh
 ```
-In the following part we describe the steps carried in the launch script.
+
+<details>
+
+<summary>In the following part we describe in detail the steps carried in the launch script</summary>
+
 ### Build images
  - Via the provided script: `./shell/images.sh`.
- - Manually:
-    1. Create image for FRR node (it must contain OpenSSH package to allow ssh access) It runs the following command:
+ - Content of the script:
+    1. Create image for FRR nodes (it must contain OpenSSH package to allow ssh access) It runs the following command:
         ```bash
         docker build -t frr-ssh:10.4.1 ./config/frr
         ```
-    2. Create image for manager node (it must contain paramiko package to allow programmatic ssh). It runs the following command:
+    2. Create image for manager node (it must contain OpenSSH and Paramiko package to allow programmatic SSH). It runs the following command:
         ```bash
-        docker build -t manager-img ./config/mngr
+        docker build -t python-ssh:3.12-alpine ./config/mngr
         ```
-Note that `frr-ssh:10.4.1` and `manager-img` are the name of the images used in `acn.clab.yml`
+    3. Create image for Alpine nodes (it must contain paramiko package to allow programmatic SSH). It runs the following command:
+        ```bash
+        docker build -t alpine-ssh:3.19.1 ./config/alpine
+        ```
+Note that `frr-ssh:10.4.1`, `python-ssh:3.12-alpine` and `alpine-ssh:3.19.1` are the name of the images used in `acn.clab.yml`
+
 ### Create bridges
   - Via the provided script `./shell/bridge.sh`
-  - Manually:
+  - Content of the script:
     ```bash
     sudo ip link add br-clab-core type bridge
     sudo ip link set br-clab-core up
-
-    sudo ip link add br-clab-int type bridge
-    sudo ip link set br-clab-int up
     ```
-Note that `br-clab-core` and `br-clab-int` are the name of the bridges used in `acn.clab.yml`
+Note that `br-clab-core` is the name of the bridge used in `acn.clab.yml`
+
+### Compile templates
+  - Via the provided script `./shell/template.sh`
+  - Content of the script:
+    ```bash
+    for file in template/data/*.yaml; do
+        python3 template/generator.py "$file"
+        echo "$file" processed
+    done
+    ```
+
+### Clear previous simulation
+  - Via the provided script `./shell/clean.sh`
+  - Content of the script:
+    ```bash
+    sudo containerlab destroy --cleanup -t acn.clab.yml
+
+    # Print container possibly left out
+    docker ps -a | grep acn-prj | awk '{print $1}' | xargs -r docker rm -f
+    docker volume ls | grep acn-prj | awk '{print $2}' | xargs -r docker volume rm
+    ip netns | grep clab
+    ip netns | grep acn-prj
+    ```
+</details>
+
+
+## Useful Containerlab commands
+
+<details>
+
+<summary>The main commands available in Containerlab</summary>
 
 ### Deploy
 Deploy the network with containerlab
@@ -159,6 +217,8 @@ To manually destory containers:
 ```bash
 sudo docker rm -f <container-id>
 ```
+</details>
+
 
 ## Containers usage
 ### FRR nodes
@@ -203,9 +263,11 @@ sudo docker rm -f <container-id>
     (password)> admin 
     ```
 - Exit shell:
- `ctrl`+`p`+`q`
+    ```bash
+    exit
+    ```
 
 #### Useful commands
 - Show interfaces:
-    - Full:  `/ # ip [addr | address]`
-    - Specific:  `/ # ip [addr | address] show dev <interface name>`
+    - Full:  `Node# ip [addr | address]`
+    - Specific:  `Node# ip [addr | address] show dev <interface name>`
