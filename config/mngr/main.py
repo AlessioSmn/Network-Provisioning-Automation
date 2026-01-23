@@ -1,12 +1,13 @@
 import json
 import time
 import paramiko
+import re
 
 USERNAME = "root"
 PASSWORD = "admin"
 
 # matrices are read with a defer of
-INTERVAL = 60
+INTERVAL = 180
 
 MY_AS = 65020
 
@@ -35,7 +36,7 @@ CU2_NET = "192.51.100.0/24"
 
 # launch clear ip bgp cmd for desiderated peer inside ssh client specified
 def clear_bgp(peer_ip, ssh):
-    cmd = f"vtysh -c 'clear ip bgp {peer_ip} soft in'"
+    cmd = f"vtysh -c 'clear ip bgp {peer_ip} soft in' -c 'clear ip bgp {peer_ip} soft out'"
     print(cmd)
     stdin, stdout, stderr = ssh.exec_command(cmd)
     stdout.channel.recv_exit_status()
@@ -48,6 +49,8 @@ def clear_bgp(peer_ip, ssh):
 
 
 def configure_filtering(gw_ip, route_inbound_map_name, bucket):
+    my_up = UP1_IP if gw_ip == GW1_IP else UP2_IP
+    my_up_as = UP1_AS if gw_ip == GW1_IP else UP2_AS
     
     cmds = ['configure terminal']
 
@@ -99,6 +102,8 @@ def configure_filtering(gw_ip, route_inbound_map_name, bucket):
     for peer_ip in ALL_PEERS:
         if peer_ip != gw_ip:
             clear_bgp(peer_ip=peer_ip, ssh=ssh)
+
+    clear_bgp(peer_ip=my_up, ssh=ssh)
 
     print(f"=== Output from {gw_ip} ===")
     print(stdout.read().decode())
@@ -161,12 +166,49 @@ def configure_bgp_local_pref(gw_ip, route_outbound_map_name, bucket):
         if peer_ip != gw_ip:
             clear_bgp(peer_ip=peer_ip, ssh=ssh)
 
+    clear_bgp(peer_ip=my_up, ssh=ssh)
+
     print(f"=== Output from {gw_ip} ===")
     print(stdout.read().decode())
     print(stderr.read().decode())
 
     ssh.close()
 
+def remove_all_route_maps(ip):
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        client.connect(lo_ip_map[ip], username=USERNAME, password=PASSWORD)
+
+        cmd = "vtysh -c 'show route-map'"
+        stdin, stdout, stderr = client.exec_command(cmd)
+        output = stdout.read().decode()
+        print(f'show route maps result on {ip}:\n{output}')
+
+        route_maps = set(
+            re.findall(r"^route-map:\s+(\S+)", output, re.MULTILINE)
+        )
+
+        if not route_maps:
+            print(f'No route maps in {ip}')
+            return
+
+        cmds = ['configure terminal']
+
+        for rm in route_maps:
+            cmds.append(f"no route-map {rm}")
+
+        cmds.append("end")
+
+        vtysh_cmd = "vtysh \\\n" + " \\\n".join([f'    -c "{c}"' for c in cmds])
+        stdin, stdout, stderr = client.exec_command(vtysh_cmd)
+
+        print(f"Removed route-maps: {', '.join(route_maps)}")
+
+    finally:
+        client.close()
 
 
 with open("traffic-matrices.json", "r") as f:
@@ -256,4 +298,6 @@ while True:
     )
 
     matrix_index = (matrix_index + 1) % len(traffic_matrices)
-    time.sleep(3000)
+    time.sleep(INTERVAL)
+    remove_all_route_maps(GW1_IP)
+    remove_all_route_maps(GW2_IP)   
