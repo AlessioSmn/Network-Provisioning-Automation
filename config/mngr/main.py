@@ -32,7 +32,7 @@ UP2_AS = 65542
 ALL_PEERS = [PE1_IP, PE2_IP, GW1_IP, GW2_IP]
 
 CU1_NET = "192.0.2.0/24"
-CU2_NET = "192.51.100.0/24"
+CU2_NET = "198.51.100.0/24"
 
 # launch clear ip bgp cmd for desiderated peer inside ssh client specified
 def clear_bgp(peer_ip, ssh):
@@ -84,7 +84,10 @@ def configure_filtering(gw_ip, route_inbound_map_name, bucket):
             continue
 
         cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
-        cmds.append(f' neighbor {peer_ip} route-map {route_inbound_map_name} out')
+        cmds.append(f' neighbor {peer_ip} route-map {route_inbound_map_name} in')
+
+    cmds.append(f' neighbor {my_up} remote-as {my_up_as}')
+    cmds.append(f' neighbor {my_up} route-map {route_inbound_map_name} out')
 
     cmds.append('end')
 
@@ -185,7 +188,6 @@ def remove_all_route_maps(ip):
         cmd = "vtysh -c 'show route-map'"
         stdin, stdout, stderr = client.exec_command(cmd)
         output = stdout.read().decode()
-        print(f'show route maps result on {ip}:\n{output}')
 
         route_maps = set(
             re.findall(r"^route-map:\s+(\S+)", output, re.MULTILINE)
@@ -219,6 +221,8 @@ matrix_index = 0
 # sleep 30s to ensure network fully operation (a regime)
 time.sleep(30)
 
+iter = 1
+
 while True:
 
     current_matrix = traffic_matrices[matrix_index]
@@ -239,6 +243,8 @@ while True:
         It's not possible to have GW1 serving (CU1 -> net) and GW2 (CU2 -> net) 
         (unless using other techniques such as traffic engineering or segment routing)
     """
+
+    print(f"\n##########################################\nCONFIGURING BGP PARAMETERS ITER {iter}\n##########################################\n")
     
     bucket_gw1 = []
     bucket_gw2 = []
@@ -301,3 +307,5 @@ while True:
     time.sleep(INTERVAL)
     remove_all_route_maps(GW1_IP)
     remove_all_route_maps(GW2_IP)   
+
+    iter += 1
