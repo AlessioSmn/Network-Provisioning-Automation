@@ -76,14 +76,6 @@ topology:
       group: frr_nodes
       mgmt-ipv4: 10.255.255.102
 
-    # Providers 
-    UP1:
-      group: frr_nodes
-      mgmt-ipv4: 10.255.255.131
-    UP2:
-      group: frr_nodes
-      mgmt-ipv4: 10.255.255.132
-
     # Core 
     PE1:
       group: frr_nodes
@@ -97,11 +89,14 @@ topology:
     GW2:
       group: frr_nodes
       mgmt-ipv4: 10.255.255.122
-  
-    # === Bridges ===
 
-    br-clab-core:
-      group: bridges
+    # Providers 
+    UP1:
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.131
+    UP2:
+      group: frr_nodes
+      mgmt-ipv4: 10.255.255.132
 
     # === Internet ===
 
@@ -116,6 +111,11 @@ topology:
     n4:
       group: alp_nodes
       mgmt-ipv4: 10.255.255.204
+  
+    # === Bridges ===
+
+    br-clab-core:
+      group: bridges
 
   # List of all links
   links:

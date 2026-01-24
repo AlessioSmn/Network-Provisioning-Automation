@@ -32,7 +32,7 @@ interface {{int.name}}
     {% endif %}
     {% if int.switchport == False %}
     no switchport
-    {% endif -%}
+    {% endif %}
     no shutdown
 !
 {% endfor -%}
