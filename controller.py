@@ -7,7 +7,8 @@ import paramiko
 NODE_IP_MAP = {
     "n1":   {"ip": "10.255.255.201", "image": "linux"},
     "n2":   {"ip": "10.255.255.202", "image": "linux"},
-    # "n3":   {"ip": "10.255.255.203", "image": "linux"},
+    "n3":   {"ip": "10.255.255.203", "image": "linux"},
+    "n4":   {"ip": "10.255.255.204", "image": "linux"},
 
     "mngr": {"ip": "10.255.255.205", "image": "linux"},
 

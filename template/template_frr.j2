@@ -30,11 +30,25 @@ interface {{int.name}}
     {% if int.description %}
     description {{int.description}}
     {% endif %}
-    no shutdown
     {% if int.switchport == False %}
     no switchport
-    {% endif -%}
+    {% endif %}
+    no shutdown
 !
+{% endfor -%}
+{% endif -%}
+!
+{# ============= OSPF ========================================== -#}
+{% if ospf -%}
+router ospf
+    router-id {{ospf.router_id}}
+    {% for net in ospf.networks -%}
+    network {{net.network}} area {{net.area}}
+    {% endfor %}
+!
+{% for pi in ospf.passive_interfaces -%}
+interface {{pi}}
+    ip ospf passive
 {% endfor -%}
 {% endif -%}
 !
@@ -60,26 +74,15 @@ router bgp {{bgp.AS}}
     network {{net.prefix}} mask {{net.mask}}
 {% endfor %}
     no bgp ebgp-requires-policy
-    no bgp network import-check
-{% endif -%}
 !
 {% for nb in bgp.neighbors -%}
 clear ip bgp {{nb.ipv4}} soft in
-{% endfor -%}
-!
-{# ============= OSPF ========================================== -#}
-{% if ospf -%}
-router ospf
-    router-id {{ospf.router_id}}
-    {% for net in ospf.networks -%}
-    network {{net.network}} area {{net.area}}
-    {% endfor %}
-!
-{% for pi in ospf.passive_interfaces -%}
-interface {{pi}}
-    ip ospf passive
+clear ip bgp {{nb.ipv4}} soft out
 {% endfor -%}
 {% endif -%}
+!
+{# ============= Static routes ========================================== -#}
+!
 {% if ipv4_routes -%}
 {% for route in ipv4_routes -%}
 ip route {{route.destination}} {{route.next_hop}}
@@ -90,13 +93,6 @@ ip route {{route.destination}} {{route.next_hop}}
 {% for route in ipv6_routes -%}
 ipv6 route {{route.destination}} {{route.next_hop}}
 {% endfor -%}
-!
-{% endif -%}
-{% if routing_enabled and routing_enabled == True -%}
-ip routing
-!
-{% else -%}
-no ip routing
 !
 {% endif -%}
 end

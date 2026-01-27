@@ -4,75 +4,75 @@ Group project for Advanced Computer Networking course, MSc in Computer Engineeri
 - [Description](#description)  
 - [Repository structure](#repository-structure)
 - [Project deployment](#project-deployment)
-  - [Project cleanup](#project-cleanup)
-  - [Build images](#build-images)
-  - [Create bridges](#create-bridges)
-  - [Compile templates](#compile-templates)
 - [Useful Containerlab commands](#useful-containerlab-commands)
 - [Containers usage](#containers-usage)
   - [FRR nodes](#frr-nodes)
   - [Alpine nodes](#alpine-nodes)
 
-## TODO
- - Decidere cosa fare della rete di management:
-    - Decidere se lasciarla nella vrf deafult o in una separata (usare env: CLAB_VRF_MGMT come nell'esercizio del Virdis)
-        - Sarebbe meglio metterla in VRF separate secondo me MA non so se poi con SSH si comanda comunque tutto (credo di si ma è da controllare comunque)
-    - Quantomeno togliere la default route che va sulla management
 
- - Ho messo ip route replace negli Alpine (per la default route), perchè ip route add fa conflitto (anche su nodo appena creato). Direi che è sufficiente dirlo nella documentazione, replace fa semplicemenete add se non c'è niente, altrimenti fa flush+add
- - **TASK 3**
-   - decidere come implemetare la matrice di traffico: semplice file direi che può andar bene
-   - algoritmo che da matrice di traffico restituisce i percorsi scelti 
-        - es: per 203.0.133.0/24 usare uscita GW2
-        - es: per 192.0.100.0/24 usare uscita PE2 (obbligato), pubblicare in uscita solo a GW1
-   - installare le regole nei quattro router dell'AS centrale via SSH
-   - testare bene se è tutto funzionante correttamente
- 
 ## Description
 Network to implement:
 ![Base structure](./img/project-base.jpg)
 Chosen configuration:
-![Network structure](./img/project.jpg)
+![Network structure](./img/project_HD.jpg)
+
+<details>
+<summary>Network details</summary>
+
+### Customer 1 part
+![Network structure](./img/acn_details_CE1.jpg)
+### Customer 2 part
+![Network structure](./img/acn_details_CE2.jpg)
+### Core part
+![Network structure](./img/acn_details_CORE.jpg)
+### Internet part
+![Network structure](./img/acn_details_INT.jpg)
+
+</details>
 
 ## Repository structure
 Compact:
 ```
 .
 ├───config
-│   ├───frr
 │   ├───alpine
+│   ├───frr
 │   ├───mngr
 │   └───startup
 ├───doc
 ├───img
+├───shell
 └───template
     └───data
 ```
 
 <details>
+
 <summary>Extended structure:</summary>
+
 ```
 .
 │   acn.clab.yml
-│   br.sh
-│   clean.sh
-│   launch.sh
 │   controller.py
+│   launch.sh
 │   readme.md
 │
 ├───config
-│   │   linux-host-cfg.sh
 │   │
 │   ├───alpine
 │   │       alp-cfg.sh
+│   │       dockerfile
 │   │
 │   ├───frr
 │   │       daemons
+│   │       dockerfile
 │   │       frr-cfg.sh
 │   │       vtysh.conf
 │   │
 │   ├───mngr
+│   │       dockerfile
 │   │       main.py
+│   │       traffic-matrices.json
 │   │
 │   └───startup
 │           *.conf
@@ -83,8 +83,14 @@ Compact:
 │
 ├───img
 │       *.drawio
-│       *.png
 │       *.jpg
+│
+├───shell
+│       bridge.sh
+│       clean.sh
+│       images.sh
+│       sshcert.sh
+│       template.sh
 │
 └───template
     │   generator.py
@@ -95,6 +101,7 @@ Compact:
     └───data
             *.yaml
 ```
+
 </details>
 
 ## Project deployment

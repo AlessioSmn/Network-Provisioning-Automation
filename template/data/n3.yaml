@@ -11,7 +11,6 @@ routing_enabled: True
 
 interfaces:
 - name: eth1
-  switchport: False
   ipv4: 203.0.113.10/25
 
 ipv4_routes:

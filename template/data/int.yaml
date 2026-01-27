@@ -38,7 +38,7 @@ interfaces:
 
 bgp:
   AS: 65551
-  ID: 172.100.0.1/32
+  ID: 203.0.114.1
   lo_iBGP: False
   lo_eBGP: False
   lo: lo
