@@ -56,6 +56,8 @@ interface {{pi}}
 {% if bgp -%}
 router bgp {{bgp.AS}}
     bgp router-id {{bgp.ID}}
+    no bgp ebgp-requires-policy
+    bgp bestpath as-path multipath-relax
 {% for nb in bgp.neighbors -%}
     {% if nb.AS %}
     neighbor {{nb.ipv4}} remote-as {{nb.AS}}
@@ -73,7 +75,6 @@ router bgp {{bgp.AS}}
 {% for net in bgp.networks %}
     network {{net.prefix}} mask {{net.mask}}
 {% endfor %}
-    no bgp ebgp-requires-policy
 !
 {% for nb in bgp.neighbors -%}
 clear ip bgp {{nb.ipv4}} soft in
