@@ -86,9 +86,6 @@ def configure_filtering(gw_ip, route_inbound_map_name, bucket):
         cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
         cmds.append(f' neighbor {peer_ip} route-map {route_inbound_map_name} in')
 
-    cmds.append(f' neighbor {my_up} remote-as {my_up_as}')
-    cmds.append(f' neighbor {my_up} route-map {route_inbound_map_name} out')
-
     cmds.append('end')
 
     vtysh_cmd = "vtysh \\\n" + " \\\n".join([f'    -c "{c}"' for c in cmds])
@@ -179,14 +176,14 @@ def configure_bgp_local_pref(gw_ip, route_outbound_map_name, bucket):
 
 def remove_all_route_maps(ip):
 
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
-        client.connect(lo_ip_map[ip], username=USERNAME, password=PASSWORD)
+        ssh.connect(lo_ip_map[ip], username=USERNAME, password=PASSWORD)
 
         cmd = "vtysh -c 'show route-map'"
-        stdin, stdout, stderr = client.exec_command(cmd)
+        stdin, stdout, stderr = ssh.exec_command(cmd)
         output = stdout.read().decode()
 
         route_maps = set(
@@ -205,12 +202,12 @@ def remove_all_route_maps(ip):
         cmds.append("end")
 
         vtysh_cmd = "vtysh \\\n" + " \\\n".join([f'    -c "{c}"' for c in cmds])
-        stdin, stdout, stderr = client.exec_command(vtysh_cmd)
+        stdin, stdout, stderr = ssh.exec_command(vtysh_cmd)
 
         print(f"Removed route-maps: {', '.join(route_maps)}")
 
     finally:
-        client.close()
+        ssh.close()
 
 
 with open("traffic-matrices.json", "r") as f:
