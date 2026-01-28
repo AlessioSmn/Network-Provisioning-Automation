@@ -83,9 +83,11 @@ def configure_filtering(gw_ip, route_inbound_map_name, bucket):
         if(peer_ip == gw_ip):
             continue
 
-        cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
-        cmds.append(f' neighbor {peer_ip} route-map {route_inbound_map_name} in')
+        #cmds.append(f' neighbor {peer_ip} remote-as {MY_AS}')
+        #cmds.append(f' neighbor {peer_ip} route-map {route_inbound_map_name} in')
 
+    cmds.append(f' neighbor {my_up} remote-as {my_up_as}')
+    cmds.append(f' neighbor {my_up} route-map {route_inbound_map_name} out')
     cmds.append('end')
 
     vtysh_cmd = "vtysh \\\n" + " \\\n".join([f'    -c "{c}"' for c in cmds])
