@@ -116,11 +116,11 @@ Options available for the launch script:
 Usage: ./launch.sh [OPTIONS]
 
 Options (no arguments required):
-  -i, --images      Build images (default: NO)
-  -c, --no_clean    Clean previous launch (default: YES)
-  -b, --bridge      Create bridges (default: NO)
-  -t, --template    Compile templates (default: NO)
-  -s, --sshkeep     Clean SSH certificates of nodes (default: YES)
+  -i, --images      Build images if specified (default: NO)
+  -c, --no_clean    Do NOT lean previous launch if specified (default: YES)
+  -b, --bridge      Create bridges if specified (default: NO)
+  -t, --template    Compile templates if specified (default: NO)
+  -s, --sshkeep     Do NOT clean SSH certificates of nodes if specified (default: YES)
   -h, --help        Show this help message and exit
 ```
 For the first deployment of the project the user should run the launch script with the following options:
