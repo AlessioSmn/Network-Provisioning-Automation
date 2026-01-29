@@ -1298,6 +1298,99 @@ The greedy algorithm will provide the following result, w.r.t. the previous matr
     \item \textbf{Bucket 2}: ExtNet2, CuNet1, CuNet2
 \end{itemize}
 
+From the following images, we can clearly see the bgp table and routing table change accordingly to the bucket.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix1/pe1-matrix1-bgp.png}
+    \caption{PE1 - Traffic matrix 1 - show ip bgp}
+    \label{fig:pe1-bgp-mat1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix1/int-matrix1-bgp.png}
+    \caption{INT - Traffic matrix 1 - show ip bgp}
+    \label{fig:int-bgp-mat1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix1/pe1-matrix1-route-table.png}
+    \caption{PE1 - Traffic matrix 1 - show ip route}
+    \label{fig:pe1-route-mat1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix1/int-matrix1-bgp.png}
+    \caption{INT - Traffic matrix 1 - show ip route}
+    \label{fig:int-route-mat1}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix2/pe1-matrix2-bgp.png}
+    \caption{PE1 - Traffic matrix 2 - show ip bgp}
+    \label{fig:pe1-bgp-mat2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix2/int-matrix2-bgp.png}
+    \caption{INT - Traffic matrix 2 - show ip bgp}
+    \label{fig:int-bgp-mat2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix2/pe1-matrix2-route-table.png}
+    \caption{PE1 - Traffic matrix 2 - show ip route}
+    \label{fig:pe1-route-mat2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix2/int-matrix2-bgp.png}
+    \caption{INT - Traffic matrix 2 - show ip route}
+    \label{fig:int-route-mat2}
+\end{figure}
+
+Finally, a comparision between \texttt{traceroute} commands. The following images show two uses of \texttt{traceroute}, the first one is launched when the current traffic matrix is matrix1, the second one when matrix2 is used.\\
+In order, there are the following:
+\begin{itemize}
+    \item n1 -\> n3
+    \item n2 -\> n4
+    \item n3 -\> n1
+    \item n4 -\> n2
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n1-n3-trcrt.png}
+    \caption{Traceroute, from n1 to n3}
+    \label{fig:traceroute-n1-n3}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n2-n4-trcrt.png}
+    \caption{Traceroute, from n2 to n4}
+    \label{fig:traceroute-n2-n4}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n3-n1-trcrt.png}
+    \caption{Traceroute, from n3 to n1}
+    \label{fig:traceroute-n3-n1}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n4-n2-trcrt.png}
+    \caption{Traceroute, from n4 to n2}
+    \label{fig:traceroute-n4-n2}
+\end{figure}
+
 \chapter{Conclusion}
 \todo{Parte potenzialmente molto inutile}
 \todo{Dire che il ciclo di prevelare matrice di traffico e applicare l'algoritmo è fatto ogni X minuti, ma è chiaramente a scopi dimostrativi di testing. Una implementazione più seria prendere i dati da stime sui dati di traffico + possibli previsioni su altre dati, e probabilmente sarebbe aggiornato solo se necessario e meno frequentemente.}
