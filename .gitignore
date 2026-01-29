@@ -1,3 +1,13 @@
 /clab-acn-prj
 /venv
 *.bak
+doc/documentation/*.aux
+doc/documentation/*.bcf
+doc/documentation/*.log
+doc/documentation/*.out
+doc/documentation/*.run.xml
+doc/documentation/*.toc
+doc/documentation/*.synctex.gz
+doc/documentation/*.fls
+doc/documentation/*.fdb_latexmk
+doc/documentation/*.pdf
