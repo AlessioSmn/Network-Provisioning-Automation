@@ -78,7 +78,7 @@ def configure_filtering(gw_ip, route_inbound_map_name, bucket):
     cmds.append(f'route-map {route_inbound_map_name} permit 999')
 
     # appling the route map
-
+    cmds.append(f'router bgp {MY_AS}')
     cmds.append(f' neighbor {my_up} remote-as {my_up_as}')
     cmds.append(f' neighbor {my_up} route-map {route_inbound_map_name} out')
     cmds.append('end')
