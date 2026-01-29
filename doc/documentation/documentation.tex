@@ -840,7 +840,8 @@ interface eth3
 
 \subsubsection{BGP}\label{sec:template_frr_bgp}
 The template section dealing with BGP firstly checks if there's a section dedicated to BGP (field \monospaced{bgp}): if that field is not present BGP is not configured.\newline
-If instead the \monospaced{bgp} field is present, the template configures the router-id (field \monospaced{ID}) and the current router's ASN (field \monospaced{AS}); also two other fields are needed for the neighbors configuration:
+If instead the \monospaced{bgp} field is present, the template configures the router-id (field \monospaced{ID}), the current router's ASN (field \monospaced{AS}) and configures BGP to install ECMP routes among different AS paths of the same length, via the command \monospaced{bestpath as-path multipath-relax}.
+Also two other fields are needed for the neighbors configuration:
 \begin{itemize}
     \item \monospaced{lo\_iBGP} --- indicates whether to use the loopback interface for iBGP sessions
     \item \monospaced{lo\_eBGP} --- indicates whether to use the loopback interface for eBGP sessions
@@ -861,6 +862,8 @@ The part of the template dealing with BGP is represented in Listing \ref{lst:tem
 {% if bgp -%}
 router bgp {{bgp.AS}}
     bgp router-id {{bgp.ID}}
+    no bgp ebgp-requires-policy
+    bgp bestpath as-path multipath-relax
 {% for nb in bgp.neighbors -%}
     {% if nb.AS %}
     neighbor {{nb.ipv4}} remote-as {{nb.AS}}
@@ -878,7 +881,6 @@ router bgp {{bgp.AS}}
 {% for net in bgp.networks %}
     network {{net.prefix}} mask {{net.mask}}
 {% endfor %}
-    no bgp ebgp-requires-policy
 !
 {% for nb in bgp.neighbors -%}
 clear ip bgp {{nb.ipv4}} soft in
