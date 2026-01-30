@@ -270,7 +270,7 @@ The structure of the implemented network is represent in Figure~\ref{fig:network
     \label{fig:network}
 \end{figure}
 \subsubsection{Management network}
-When deploying the network, Containerlab, based on Docker, creates all nodes as containers and automatically configures a management interface (\monospaced{eth0}), assigns it an IP address, and installs a default route through that interface. To the best of our knowledge, there is no supported way to prevent the creation of this interface and its associated default route. For this reason, we decided to explicitly use it as the management interface.\newline
+When deploying the network, Containerlab, based on Docker, creates all nodes as containers and automatically configures a management interface (\monospaced{eth0}), assigns it an IP address, and installs a default route through that interface. To the best of our knowledge, there is no supported way to prevent the creation of this interface and its associated default route. For this reason, we decided to explicitly use it as the management interface.
 \paragraph{Management addresses}
 The management network prefix can be configured in the topology file, as shown in Listing \ref{lst:mgmt_net}:
 \begin{lstlisting}[style=styleYml, caption=Management network, label=lst:mgmt_net,
@@ -288,9 +288,9 @@ By default, Docker assigns management IP addresses dynamically. However, fixed I
 \end{lstlisting}
 \paragraph{Management VRF}
 Another possible source of problem is the default route towards the management interface, which is installed as a route of type \monospaced{kernel}, and thus cannot be removed.\newline
-To avoid unintended traffic being forwarded toward the management network, we configured the startup scripts of all nodes to optionally move the management interface into a dedicated and isolated Virtual Routing and Forwarding instance (VRF).
-To allow us to avoid that default route and consequent traffic towards the management network, we configured the startup files of all nodes to be able to move the management interface into a dedicated and separated Virtual Routing Function (VRF). If the environment variable \monospaced{CLAB\_MGMT\_VRF} is specified in the topology file, as represented in Listing \ref{mgmt_vrf_topo},
-\begin{lstlisting}[style=styleYml, caption=Management VRF in .clab.yml, label=lst:mgmt_vrf_topo,
+To avoid unintended traffic being forwarded toward the management network, we configured the startup scripts of all nodes to optionally move the management interface into a dedicated and isolated VRF.
+To allow us to avoid that default route and consequent traffic towards the management network, we configured the startup files of all nodes to be able to move the management interface into a dedicated and separated VRF. If the environment variable \monospaced{CLAB\_MGMT\_VRF} is specified in the topology file, as represented in Listing \ref{lst:mgmt_vrf_topo},
+\begin{lstlisting}[style=styleYml, caption=Management VRF in acn.clab.yml, label=lst:mgmt_vrf_topo,
     morekeywords={frr_nodes, CLAB_MGMT_VRF, CLAB_MGMT_GW}]
 topology:
   groups:
@@ -352,10 +352,10 @@ Three types of nodes are present in the network: \monobold{FRR} routers, \monobo
 Based on FRRouting image, or FRR, version \monospaced{10.4.1}. OpenSSH is added, username and password are set, and keys are generated. The final image is build by the \monospaced{/shell/images.sh} script and named \monobold{frr-ssh:10.4.1}. \newline The FRR dockerfile is found at \monospaced{./config/frr/dockerfile}.
 \subsection{Alpine nodes}\label{sec:img_alp}
 Based on an Alpine image, version \monospaced{3.19.1}. OpenSSH is added, username and password are set, and keys are generated. The final image is build by the \monospaced{/shell/images.sh} script and named \monobold{alpine-ssh:3.19.1}.\newline
-The FRR dockerfile is found at \monospaced{./config/alpine/dockerfile}.
+The Alpine dockerfile is found at \monospaced{./config/alpine/dockerfile}.
 \subsection{Manager node}\label{sec:img_pyt}
 Based on an Alpine image, version \monospaced{3.19.1}. Most importantly OpenSSH and Paramiko are added: username and password are set, and keys are generated to enable SSH access, while Paramiko is needed to be able to execute Python scripts on the node. The final image is build by the \monospaced{/shell/images.sh} script and named \monobold{python-ssh:3.12-alpine}.\newline
-The FRR dockerfile is found at \monospaced{./config/mngr/dockerfile}.
+The Manager dockerfile is found at \monospaced{./config/mngr/dockerfile}.
 
 
 \section{Network details}\label{sec:net_details}
@@ -660,7 +660,7 @@ All routers have been configured with BGP; For \monospaced{router-id} the loopba
  eBGP & UP1 & 172.16.2.1 & INT & 172.16.2.2 \\
  eBGP & UP2 & 172.16.3.1 & INT & 172.16.3.2 \\\hline
 \end{tabular}
-\label{tab:mgmt}
+\label{tab:bgp}
 \caption{BGP relations}
 \end{center}
 \end{table}
@@ -759,7 +759,7 @@ interface {{int.name}}
 {% endfor -%}
 {% endif -%}
 \end{lstlisting}
-An example of a parameters file to be passed, compliant with the previously described part of template is represented in the following Listing \ref{lst:template_int_data}:
+An example of a parameters file to be passed, compliant with the previously described part of template, is represented in the following Listing \ref{lst:template_int_data}:
 \begin{lstlisting}[style=styleYml, caption=Interfaces parameters, label=lst:template_int_data,,
     morekeywords={interfaces,name,ipv4,switchport,description}]      
 interfaces:
@@ -808,7 +808,7 @@ interface {{pi}}
 {% endfor -%}
 {% endif -%}
 \end{lstlisting}
-An example of a parameters file to be passed, compliant with the previously described part of template is represented in the following Listing \ref{lst:template_ospf_data}:
+An example of a parameters file to be passed, compliant with the previously described part of template, is represented in the following Listing \ref{lst:template_ospf_data}:
 \begin{lstlisting}[style=styleYml, caption=OSPF parameters, label=lst:template_ospf_data,
     morekeywords={ospf, pid, router_id, passive_interfaces, networks, network, area}]
 ospf:
@@ -890,7 +890,7 @@ clear ip bgp {{nb.ipv4}} soft out
 !
 \end{lstlisting}
 The template also loops again over the list of neighbors (field \monospaced{neighbors}) and clears all routes received and sent to each neighbor: this doesn't regard the actual BGP configuration, it is done to enforce a refreshing of all BGP routes in the system, in order to avoiding possible errors in the configuration phase.\newline
-An example of a parameters file to be passed, compliant with the previously described part of template is represented in the following Listing \ref{lst:template_bgp_data}:
+An example of a parameters file to be passed, compliant with the previously described part of template, is represented in the following Listing \ref{lst:template_bgp_data}:
 \begin{lstlisting}[style=styleYml, caption=BGP parameters, label=lst:template_bgp_data,
     morekeywords={bgp, AS, ID, lo_iBGP, lo_eBGP, lo,neighbors,ipv4}]
 bgp:
@@ -1017,9 +1017,10 @@ echo Type tail -f log_file.log to see the live output
 \end{lstlisting}
 
 \section{Network automation}
+As per project specification the traffic load balancing via BGP attributes is done only for the two upstream links (GW1-UP1 and GW2-UP2).\\
 The entire network automation procedure is contained inside a python script called \texttt{main.py}.
 The Manager node executes this Python script passed to it with \texttt{bind} CONTAINERlab command. The script is executed in launched in background at the network deploy using bash script called \texttt{mngr.sh}.\\
-Moreover, a file called \texttt{traffic-matrices.json} is passed to the manger as well. In this json file, the traffic estimation (Gb/s) for each route is included. 
+Moreover, a file called \texttt{traffic-matrices.json} is passed to the manger as well. In this json file, the traffic estimation (Gb/s) for each route is included. An exmaple of a traffic matrix structure is shown in Listing \ref{lst:traffic-matrices}:
 \begin{lstlisting}[style=styleJson, caption=A Traffic Matrix, label=lst:traffic-matrices]
 { "from": "192.0.2.0/24", "to": "203.0.113.0/25", "traf": 12 },
 { "from": "198.51.100.0/24", "to": "203.0.113.0/25", "traf": 7 },
@@ -1030,8 +1031,9 @@ Moreover, a file called \texttt{traffic-matrices.json} is passed to the manger a
 { "from": "203.0.113.0/25", "to": "198.51.100.0/24", "traf": 6 },
 { "from": "203.0.113.128/25", "to": "198.51.100.0/24", "traf": 10 }
 \end{lstlisting}
-In the Python script, there is an infinite loop. In every iteration, a new traffic matrix is obtained, and a simple greedy algorithm splits the traffic. The greedy algorithm exploits two buckets in order to determine an efficient traffic distribution across upstream links. The algorithm operates iteratively\footnote{Between every iteration \texttt{time.sleep(180)} is called.} according to the following steps:
 
+\subsection{Load balancing algorithm}
+In the Python script, there is an infinite loop. In every iteration, a new traffic matrix is obtained, and a simple greedy algorithm splits the traffic. The greedy algorithm exploits two buckets in order to determine an efficient traffic distribution across upstream links. The algorithm operates iteratively\footnote{Between every iteration \texttt{time.sleep(180)} is called.} according to the following steps:
 \begin{enumerate}
     \item Retrieve a route from the set of available routes.
     \item Among the two buckets, select the one with the minimum amount of expected traffic.
@@ -1302,6 +1304,9 @@ The greedy algorithm will provide the following result, w.r.t. the previous matr
 
 From the following images, we can clearly see the bgp table and routing table change accordingly to the bucket.
 
+\subsection{Resulting tables}
+\subsubsection{Matrix 1 - resulting tables}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/matrix1/pe1-matrix1-bgp.png}
@@ -1330,6 +1335,7 @@ From the following images, we can clearly see the bgp table and routing table ch
     \label{fig:int-route-mat1}
 \end{figure}
 
+\subsubsection{Matrix 2 - resulting tables}
 
 \begin{figure}[H]
     \centering
@@ -1359,6 +1365,7 @@ From the following images, we can clearly see the bgp table and routing table ch
     \label{fig:int-route-mat2}
 \end{figure}
 
+\subsection{Traceroute examples}
 Finally, a comparision between \texttt{traceroute} commands. The following images show two uses of \texttt{traceroute}, the first one is launched when the current traffic matrix is matrix1, the second one when matrix2 is used.\\
 In order, there are the following:
 \begin{itemize}
@@ -1368,62 +1375,78 @@ In order, there are the following:
     \item n4 -\> n2
 \end{itemize}
 
+\subsubsection{n1 to n3}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n1-n3-trcrt.png}
     \caption{Traceroute, from n1 to n3}
     \label{fig:traceroute-n1-n3}
 \end{figure}
+\begin{itemize}
+    \item Matrix1: n1, CE1, PE1, GW1, UP1, INT, n3 
+    \item Matrix2: n1, CE1, PE1, GW1, UP1, INT, n3 
+\end{itemize}
+
+\subsubsection{n2 to n4}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n2-n4-trcrt.png}
     \caption{Traceroute, from n2 to n4}
     \label{fig:traceroute-n2-n4}
 \end{figure}
+\begin{itemize}
+    \item Matrix1: n2, CE2, PE2, GW2, UP2, INT, n4 
+    \item Matrix2: n2, CE2, PE2, GW2, UP2, INT, n4 
+\end{itemize}
+
+\subsubsection{n3 to n1}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n3-n1-trcrt.png}
     \caption{Traceroute, from n3 to n1}
     \label{fig:traceroute-n3-n1}
 \end{figure}
+\begin{itemize}
+    \item Matrix1: n3, INT, UP2, GW2, PE2, CE1, n1
+    \item Matrix2: n3, INT, UP2, GW2, PE2, CE1, n1
+\end{itemize}
+
+\subsubsection{n4 to n2}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{acn-testing/load-balancing-test/n4-n2-trcrt.png}
     \caption{Traceroute, from n4 to n2}
     \label{fig:traceroute-n4-n2}
 \end{figure}
+\begin{itemize}
+    \item Matrix1: n4, INT, UP1, GW1, PE1, CE2, n2
+    \item Matrix2: n4, INT, UP2, GW2, PE1, CE2, n2
+\end{itemize}
 
 \chapter{Conclusion}
+\section{Results}
 The project successfully achieves its primary objectives:
 \begin{itemize}
     \item automating the generation of network configuration files from YAML descriptions using \textbf{Jinja2};
     \item deploying the network through \textbf{containerlab} based on the automatically generated configuration files;
     \item implementing an automated load balancing mechanism by exploiting \textbf{BGP} features such as \textit{local\_preference} and route filtering.
 \end{itemize}
-Despite these positive results, several aspects of the project can be further improved, particularly with respect to the load balancing strategy. I
-n the current implementation, route maps are periodically removed and re-created every three minutes. 
+
+\section{Future work}
+Despite these positive results, several aspects of the project can be further improved, particularly with respect to the load balancing strategy.
+\paragraph{Route maps}
+In the current implementation, route maps are periodically removed and re-created every three minutes. 
 While this approach is sufficient to demonstrate the automation mechanism and its effectiveness within the scope of this project, 
 it is not efficient and would be unsuitable in a real-world production environment.
 In practical scenarios, policy updates would typically occur less frequently, and route maps could be modified in place rather than being entirely removed and re-created, 
 thus reducing control-plane overhead and potential instability.
+\paragraph{BGP limitations}
 Furthermore, relying only on BGP for load balancing introduces intrinsic limitations. 
 BGP performs routing decisions at the prefix level rather than at the flow level and lacks native awareness of network congestion and link utilization. 
 To overcome these limitations, the proposed solution could be enhanced by integrating more advanced mechanisms such as \textbf{Traffic Engineering} and \textbf{Segment Routing}. 
 These technologies enable explicit control over flows (not only prefix based as BGP), improving load balancing flexibility and providing faster and more reliable reactions to network faults and congestion.
+\paragraph{Expansion}
+The current approach used to achieve a sort of load balancing across the two upstream links can be replicated and used to balance traffic on the customer side of the network. We choose not to implement this as only the upstream link were required and it would be conceptually very similar, just increasing the complexity of the algorithm.
 
-\chapter{References / bibliography}
-\todo{refrence to: general documents, papers, projects, short paper, websites, libraries used}
-\todo{Se non ci sono, togliere}
-
-\appendix
-
-\chapter{Templates}
-\todo{Se vogliamo}
-
-\chapter{Routing tables}
-\todo{Se vogliamo}
-
-\chapter{BGP configurations}
-\todo{Se vogliamo}
 
 \end{document}
