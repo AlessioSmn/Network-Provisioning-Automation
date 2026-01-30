@@ -1394,9 +1394,22 @@ In order, there are the following:
 \end{figure}
 
 \chapter{Conclusion}
-\todo{Parte potenzialmente molto inutile}
-\todo{Dire che il ciclo di prevelare matrice di traffico e applicare l'algoritmo è fatto ogni X minuti, ma è chiaramente a scopi dimostrativi di testing. Una implementazione più seria prendere i dati da stime sui dati di traffico + possibli previsioni su altre dati, e probabilmente sarebbe aggiornato solo se necessario e meno frequentemente.}
-
+The project successfully achieves its primary objectives:
+\begin{itemize}
+    \item automating the generation of network configuration files from YAML descriptions using \textbf{Jinja2};
+    \item deploying the network through \textbf{containerlab} based on the automatically generated configuration files;
+    \item implementing an automated load balancing mechanism by exploiting \textbf{BGP} features such as \textit{local\_preference} and route filtering.
+\end{itemize}
+Despite these positive results, several aspects of the project can be further improved, particularly with respect to the load balancing strategy. I
+n the current implementation, route maps are periodically removed and re-created every three minutes. 
+While this approach is sufficient to demonstrate the automation mechanism and its effectiveness within the scope of this project, 
+it is not efficient and would be unsuitable in a real-world production environment.
+In practical scenarios, policy updates would typically occur less frequently, and route maps could be modified in place rather than being entirely removed and re-created, 
+thus reducing control-plane overhead and potential instability.
+Furthermore, relying only on BGP for load balancing introduces intrinsic limitations. 
+BGP performs routing decisions at the prefix level rather than at the flow level and lacks native awareness of network congestion and link utilization. 
+To overcome these limitations, the proposed solution could be enhanced by integrating more advanced mechanisms such as \textbf{Traffic Engineering} and \textbf{Segment Routing}. 
+These technologies enable explicit control over flows (not only prefix based as BGP), improving load balancing flexibility and providing faster and more reliable reactions to network faults and congestion.
 
 \chapter{References / bibliography}
 \todo{refrence to: general documents, papers, projects, short paper, websites, libraries used}
